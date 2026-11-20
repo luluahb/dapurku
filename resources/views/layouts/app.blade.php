@@ -69,7 +69,7 @@
     @livewireStyles
 </head>
 
-<body class="min-h-screen bg-krem font-sans text-stone-800 antialiased transition-colors duration-300 print:bg-white dark:bg-stone-950 dark:text-stone-200">
+<body class="flex min-h-dvh flex-col bg-krem font-sans text-stone-800 antialiased transition-colors duration-300 print:bg-white dark:bg-stone-950 dark:text-stone-200">
 
     {{-- ===== NAVBAR =====
          x-data = "memori" kecil milik Alpine.js untuk navbar ini --}}
@@ -192,9 +192,11 @@
     @endif
 
     {{-- ===== ISI HALAMAN ===== --}}
-    {{-- overflow-x-clip: hiasan yang keluar dari layar dipotong,
+    {{-- flex-1: isi halaman mengisi sisa tinggi layar, jadi footer selalu terdorong ke dasar layar
+         (body memakai "flex min-h-dvh flex-col"; dvh = tinggi layar HP yang sebenarnya).
+         overflow-x-clip: hiasan yang keluar dari layar dipotong,
          supaya halaman tidak bisa "digeser ke samping" di HP --}}
-    <main class="overflow-x-clip">
+    <main class="flex-1 overflow-x-clip">
         {{ $slot }}
     </main>
 
@@ -221,7 +223,7 @@
                 <p class="mt-3 text-sm text-stone-500 dark:text-stone-400">Dibuat dengan Laravel, Livewire, dan Tailwind CSS sebagai proyek portofolio.</p>
             </div>
         </div>
-        <p class="pb-8 text-center text-sm text-stone-400">© {{ date('Y') }} Dapurku. Dibuat dengan ❤️ dan sedikit garam.</p>
+        <p class="px-4 pb-24 text-center text-sm text-stone-400 sm:pb-8">© {{ date('Y') }} Dapurku. Dibuat dengan ❤️ dan sedikit garam.</p>
     </footer>
 
     {{-- ===== TOMBOL KEMBALI KE ATAS =====
