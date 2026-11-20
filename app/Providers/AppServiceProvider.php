@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -18,5 +19,10 @@ class AppServiceProvider extends ServiceProvider
         // Gate "admin": izin yang hanya dimiliki user dengan is_admin = true.
         // Dipakai di route (middleware 'can:admin') dan di Blade (@can('admin')).
         Gate::define('admin', fn (User $user) => $user->is_admin);
+
+        // Saat online (APP_ENV=production), semua link dibuat https
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
     }
 }

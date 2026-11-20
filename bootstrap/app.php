@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Di hosting, request lewat "proxy" dulu. Percayai proxy itu supaya Laravel tahu
+        // website diakses lewat https (kalau tidak, link CSS/JS bisa tertulis http dan diblokir).
+        $middleware->trustProxies(at: '*');
+
         // Belum login tapi membuka halaman admin → diarahkan ke form login admin
         $middleware->redirectGuestsTo(fn () => route('admin.login'));
         // Sudah login tapi membuka form login → diarahkan ke dashboard admin
