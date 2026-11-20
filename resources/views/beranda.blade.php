@@ -83,7 +83,7 @@
         </div>
 
         {{-- Di HP bisa digeser ke samping; di laptop jadi grid --}}
-        <div class="-mx-4 mt-8 flex snap-x gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0 lg:grid-cols-8">
+        <div class="scrollbar-none -mx-4 mt-8 flex snap-x gap-4 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0 lg:grid-cols-8">
             @foreach ($kategori as $item)
                 <a href="{{ route('jelajah', ['kategori' => $item->slug]) }}"
                     class="group flex w-28 shrink-0 snap-start flex-col items-center gap-3 rounded-3xl bg-white p-4 text-center shadow-sm ring-1 ring-stone-200/70 transition duration-300 hover:-translate-y-1 hover:bg-primer-500 hover:shadow-xl hover:shadow-primer-500/20 sm:w-auto dark:bg-stone-900 dark:ring-stone-800 dark:hover:bg-primer-600">

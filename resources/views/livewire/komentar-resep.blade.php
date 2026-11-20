@@ -1,5 +1,5 @@
 {{-- Komponen Livewire: komentar & rating. Data dari App\Livewire\KomentarResep --}}
-<section id="komentar" class="mx-auto mt-24 max-w-6xl scroll-mt-24 px-4 sm:px-6">
+<section id="komentar" class="mx-auto mt-24 max-w-6xl scroll-mt-24 px-4 sm:px-6 print:hidden">
     <p class="font-semibold text-primer-600">💬 Kata mereka yang sudah mencoba</p>
     <h2 class="mt-1 font-judul text-3xl font-bold sm:text-4xl">Ulasan & komentar</h2>
 

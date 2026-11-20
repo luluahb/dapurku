@@ -56,6 +56,29 @@
     color-scheme: dark;
 }
 
+/* Utility buatan sendiri: sembunyikan scrollbar, tapi elemennya tetap bisa digeser.
+   Dipakai dengan class "scrollbar-none" (misalnya deretan kategori di HP). */
+@utility scrollbar-none {
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+/* Aksesibilitas: kalau pengguna mengaktifkan "kurangi animasi" di HP/laptopnya,
+   semua animasi & transisi dimatikan (ada orang yang pusing melihat animasi). */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
 /* Elemen dengan x-cloak disembunyikan sampai Alpine.js siap (mencegah "kedip") */
 [x-cloak] {
     display: none !important;

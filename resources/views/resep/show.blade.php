@@ -1,5 +1,6 @@
 {{-- Halaman detail resep. Data dari ResepController@show: $resep, $resepLain --}}
-<x-layouts::app :title="$resep->judul">
+{{-- description & gambar dipakai untuk pratinjau saat link resep ini dibagikan --}}
+<x-layouts::app :title="$resep->judul" :description="$resep->deskripsi" :gambar="$resep->foto_url">
 
     @php
         $warnaKesulitan = match ($resep->kesulitan) {
@@ -15,7 +16,7 @@
 
         <div class="relative mx-auto max-w-6xl px-4 pt-6 sm:px-6">
             {{-- Breadcrumb: jejak lokasi halaman --}}
-            <nav class="flex flex-wrap items-center gap-2 text-sm text-stone-500 dark:text-stone-400">
+            <nav class="flex flex-wrap items-center gap-2 text-sm text-stone-500 print:hidden dark:text-stone-400">
                 <a href="{{ route('beranda') }}" class="hover:text-primer-600">Beranda</a>
                 <span>/</span>
                 <a href="{{ route('jelajah', ['kategori' => $resep->kategori->slug]) }}" class="hover:text-primer-600">{{ $resep->kategori->nama }}</a>
@@ -23,10 +24,11 @@
                 <span class="line-clamp-1 font-medium text-stone-700 dark:text-stone-200">{{ $resep->judul }}</span>
             </nav>
 
-            <div class="mt-6 grid items-center gap-10 lg:grid-cols-2">
+            {{-- print:... = gaya khusus saat dicetak: foto kecil di kiri, info di kanan --}}
+            <div class="mt-6 grid items-center gap-10 lg:grid-cols-2 print:mt-0 print:grid-cols-[14rem_1fr] print:items-start print:gap-6">
                 {{-- Foto besar --}}
                 <div class="relative">
-                    <div class="aspect-[4/3] overflow-hidden rounded-[2rem] bg-primer-50 shadow-2xl shadow-stone-300/50 dark:bg-stone-800 dark:shadow-none">
+                    <div class="aspect-[4/3] overflow-hidden rounded-[2rem] bg-primer-50 shadow-2xl shadow-stone-300/50 print:rounded-2xl print:shadow-none dark:bg-stone-800 dark:shadow-none">
                         @if ($resep->foto_url)
                             <img src="{{ $resep->foto_url }}" alt="{{ $resep->judul }}" class="size-full object-cover">
                         @else
@@ -34,7 +36,7 @@
                         @endif
                     </div>
                     {{-- Stiker kategori yang melayang --}}
-                    <span style="--putar: -6deg" class="absolute -bottom-5 -left-3 grid size-20 animate-melayang place-items-center rounded-3xl bg-white text-4xl shadow-xl sm:-left-5 dark:bg-stone-900">
+                    <span style="--putar: -6deg" class="absolute -bottom-5 -left-3 grid size-20 print:hidden animate-melayang place-items-center rounded-3xl bg-white text-4xl shadow-xl sm:-left-5 dark:bg-stone-900">
                         {{ $resep->kategori->ikon }}
                     </span>
                 </div>
@@ -45,7 +47,7 @@
                         {{ $resep->kategori->nama }}
                     </span>
 
-                    <h1 class="mt-4 font-judul text-4xl font-bold leading-tight tracking-tight sm:text-5xl">{{ $resep->judul }}</h1>
+                    <h1 class="mt-4 font-judul text-4xl font-bold leading-tight tracking-tight sm:text-5xl print:mt-2 print:text-3xl">{{ $resep->judul }}</h1>
 
                     {{-- Ringkasan rating, klik untuk turun ke bagian komentar --}}
                     @php
@@ -78,7 +80,7 @@
                     </div>
 
                     {{-- Info singkat --}}
-                    <dl class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <dl class="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4 print:mt-4">
                         <div class="rounded-2xl bg-white p-4 text-center shadow-sm ring-1 ring-stone-200/70 dark:bg-stone-900 dark:ring-stone-800">
                             <dt class="text-2xl">⏱️</dt>
                             <dd class="mt-1 font-bold">{{ $resep->waktu }} mnt</dd>
@@ -102,15 +104,29 @@
                     </dl>
 
                     {{-- Tombol aksi --}}
-                    <div class="mt-6 flex flex-wrap gap-3">
+                    <div class="mt-6 flex flex-wrap gap-3 print:hidden">
                         {{-- Komponen yang sama dengan di kartu, tapi ukuran besar --}}
                         <x-tombol-suka :resep="$resep" ukuran="besar" />
                         <x-tombol-simpan :resep="$resep" ukuran="besar" />
-                        {{-- Bagikan: menyalin alamat halaman ini ke clipboard --}}
+                        {{-- Bagikan:
+                             - HP (dan browser yang mendukung): buka menu bagikan bawaan → WhatsApp, Telegram, dll.
+                             - Selain itu: salin link ke clipboard --}}
                         <button type="button" x-data="{ tersalin: false }"
-                            @click="navigator.clipboard.writeText(location.href); tersalin = true; setTimeout(() => tersalin = false, 2000)"
+                            @click="if (navigator.share) {
+                                        navigator.share({ title: document.title, url: location.href }).catch(() => {});
+                                    } else {
+                                        navigator.clipboard.writeText(location.href);
+                                        tersalin = true;
+                                        setTimeout(() => tersalin = false, 2000);
+                                    }"
                             class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-semibold shadow-lg ring-1 ring-stone-200 transition active:scale-95 dark:bg-stone-900 dark:ring-stone-700">
-                            <span x-text="tersalin ? '✅ Link tersalin!' : '🔗 Bagikan'"></span>
+                            <span x-text="tersalin ? '✅ Link tersalin!' : '🔗 Bagikan'">🔗 Bagikan</span>
+                        </button>
+                        {{-- Cetak: membuka jendela print browser. Bagian yang tidak perlu (navbar, tombol,
+                             komentar) disembunyikan dengan class print:hidden --}}
+                        <button type="button" @click="window.print()"
+                            class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-semibold shadow-lg ring-1 ring-stone-200 transition active:scale-95 dark:bg-stone-900 dark:ring-stone-700">
+                            🖨️ Cetak
                         </button>
                     </div>
                 </div>
@@ -119,19 +135,19 @@
     </section>
 
     {{-- ===================== BAHAN & LANGKAH ===================== --}}
-    <section class="mx-auto mt-16 grid max-w-6xl items-start gap-8 px-4 sm:px-6 lg:grid-cols-[22rem_1fr]">
+    <section class="mx-auto mt-16 grid max-w-6xl items-start gap-8 px-4 sm:px-6 lg:grid-cols-[22rem_1fr] print:mt-8 print:grid-cols-[16rem_1fr] print:gap-6">
 
         {{-- ----- BAHAN -----
              $persist = data Alpine yang disimpan di localStorage browser,
              jadi centangnya tetap ada walau halaman di-refresh. --}}
         <div x-data="{ siap: $persist([]).as('dapurku-bahan-{{ $resep->id }}') }"
-            class="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-stone-200/70 lg:sticky lg:top-24 dark:bg-stone-900 dark:ring-stone-800">
+            class="rounded-[2rem] bg-white p-6 shadow-sm ring-1 ring-stone-200/70 lg:sticky lg:top-24 print:static print:p-4 print:shadow-none dark:bg-stone-900 dark:ring-stone-800">
             <div class="flex items-center justify-between">
                 <h2 class="font-judul text-2xl font-bold">🧺 Bahan-bahan</h2>
-                <span class="rounded-full bg-primer-100 px-3 py-1 text-sm font-bold tabular-nums text-primer-700 dark:bg-primer-500/15 dark:text-primer-300"
+                <span class="rounded-full bg-primer-100 px-3 py-1 text-sm font-bold tabular-nums text-primer-700 print:hidden dark:bg-primer-500/15 dark:text-primer-300"
                     x-text="siap.length + '/{{ $resep->bahan->count() }}'"></span>
             </div>
-            <p class="mt-1 text-sm text-stone-500">Centang bahan yang sudah siap.</p>
+            <p class="mt-1 text-sm text-stone-500 print:hidden">Centang bahan yang sudah siap.</p>
 
             <ul class="mt-5 space-y-1">
                 @foreach ($resep->bahan as $bahan)
@@ -173,13 +189,13 @@
             <div class="flex flex-wrap items-end justify-between gap-3">
                 <div>
                     <h2 class="font-judul text-3xl font-bold">👩‍🍳 Cara memasak</h2>
-                    <p class="mt-1 text-sm text-stone-500">Klik langkah yang sudah selesai.</p>
+                    <p class="mt-1 text-sm text-stone-500 print:hidden">Klik langkah yang sudah selesai.</p>
                 </div>
-                <p class="text-sm font-semibold text-stone-500"><span x-text="selesai.length"></span> dari {{ $resep->langkah->count() }} langkah</p>
+                <p class="text-sm font-semibold text-stone-500 print:hidden"><span x-text="selesai.length"></span> dari {{ $resep->langkah->count() }} langkah</p>
             </div>
 
             {{-- Progress bar: lebarnya mengikuti persentase langkah yang selesai --}}
-            <div class="mt-4 h-2 overflow-hidden rounded-full bg-stone-200 dark:bg-stone-800">
+            <div class="mt-4 h-2 overflow-hidden rounded-full bg-stone-200 print:hidden dark:bg-stone-800">
                 <div class="h-full rounded-full bg-gradient-to-r from-primer-400 to-primer-600 transition-all duration-500"
                     :style="`width: ${selesai.length / total * 100}%`"></div>
             </div>
@@ -224,7 +240,7 @@
 
     {{-- ===================== RESEP LAINNYA ===================== --}}
     @if ($resepLain->isNotEmpty())
-        <section class="mx-auto mt-24 max-w-6xl px-4 sm:px-6">
+        <section class="mx-auto mt-24 max-w-6xl px-4 sm:px-6 print:hidden">
             <p class="font-semibold text-primer-600">🍴 Masih lapar?</p>
             <h2 class="mt-1 font-judul text-3xl font-bold sm:text-4xl">Coba resep lainnya</h2>
 

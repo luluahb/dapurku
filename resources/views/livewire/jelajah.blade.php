@@ -40,7 +40,7 @@
 
     {{-- ===================== FILTER KATEGORI ===================== --}}
     {{-- @class: menyusun class sesuai kondisi. Class yang nilainya true saja yang dipakai. --}}
-    <div class="-mx-4 mt-8 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+    <div class="scrollbar-none -mx-4 mt-8 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
         <button type="button" wire:click="$set('kategori', '')"
             @class([
                 'shrink-0 rounded-full px-4 py-2 text-sm font-semibold ring-1 transition active:scale-95',

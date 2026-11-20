@@ -3,7 +3,19 @@
     Dipakai halaman biasa dengan: <x-layouts::app title="Judul"> ... </x-layouts::app>
     dan otomatis dipakai oleh halaman Livewire.
 --}}
-@props(['title' => null])
+{{--
+    Props (semua boleh dikosongkan):
+    - title       : judul tab browser
+    - description : deskripsi untuk Google & pratinjau link
+    - gambar      : gambar pratinjau saat link dibagikan (WhatsApp, Facebook, X)
+--}}
+@props(['title' => null, 'description' => null, 'gambar' => null])
+
+@php
+    $judulHalaman = $title ? $title . ' · Dapurku' : 'Dapurku · Resep Masakan Rumahan';
+    $deskripsi = Str::limit($description ?? 'Temukan resep masakan rumahan, cari berdasarkan bahan yang ada di dapurmu, dan simpan resep favoritmu.', 160);
+    $gambarPratinjau = $gambar ?? asset('images/og-dapurku.png');
+@endphp
 
 <!DOCTYPE html>
 <html lang="id">
@@ -11,17 +23,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ? $title . ' · Dapurku' : 'Dapurku · Resep Masakan Rumahan' }}</title>
-    <meta name="description" content="Dapurku: temukan dan bagikan resep masakan rumahan favoritmu.">
+    <title>{{ $judulHalaman }}</title>
+    <meta name="description" content="{{ $deskripsi }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    {{-- Open Graph: dibaca WhatsApp, Facebook, LinkedIn, dll. saat link dibagikan --}}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Dapurku">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:title" content="{{ $judulHalaman }}">
+    <meta property="og:description" content="{{ $deskripsi }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ $gambarPratinjau }}">
+    {{-- Versi X/Twitter: tampil sebagai kartu bergambar besar --}}
+    <meta name="twitter:card" content="summary_large_image">
+
+    {{-- Ikon di tab browser & warna bilah browser di HP --}}
+    <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
+    <meta name="theme-color" content="#fb5d12">
+
     {{-- Token keamanan untuk request POST dari JavaScript (tombol suka) --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    {{-- Pasang mode gelap SEBELUM halaman tampil, supaya tidak "berkedip" putih --}}
+    {{-- Pasang mode gelap SEBELUM halaman tampil, supaya tidak "berkedip" putih.
+         try/catch: localStorage bisa diblokir browser (mode privat). --}}
     <script>
-        if (localStorage.getItem('tema') === 'gelap' ||
-            (!localStorage.getItem('tema') && matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        }
+        try {
+            const tema = localStorage.getItem('tema');
+            if (tema === 'gelap' || (!tema && matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        } catch (e) {}
     </script>
 
     @fonts
@@ -29,7 +61,7 @@
     @livewireStyles
 </head>
 
-<body class="min-h-screen bg-krem font-sans text-stone-800 antialiased transition-colors duration-300 dark:bg-stone-950 dark:text-stone-200">
+<body class="min-h-screen bg-krem font-sans text-stone-800 antialiased transition-colors duration-300 print:bg-white dark:bg-stone-950 dark:text-stone-200">
 
     {{-- ===== NAVBAR =====
          x-data = "memori" kecil milik Alpine.js untuk navbar ini --}}
@@ -37,7 +69,7 @@
         x-init="sudahGulir = window.scrollY > 10"
         @scroll.window="sudahGulir = window.scrollY > 10"
         :class="sudahGulir ? 'bg-white/80 shadow-sm backdrop-blur-lg dark:bg-stone-900/80' : 'bg-transparent'"
-        class="sticky top-0 z-50 transition-all duration-300">
+        class="sticky top-0 z-50 transition-all duration-300 print:hidden">
 
         <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
             {{-- Logo --}}
@@ -68,7 +100,7 @@
                     x-data="{ gelap: document.documentElement.classList.contains('dark') }"
                     @click="gelap = !gelap;
                             document.documentElement.classList.toggle('dark', gelap);
-                            localStorage.setItem('tema', gelap ? 'gelap' : 'terang')"
+                            try { localStorage.setItem('tema', gelap ? 'gelap' : 'terang') } catch (e) {}"
                     class="grid size-10 place-items-center rounded-full transition hover:bg-primer-100 active:scale-90 dark:hover:bg-stone-800">
                     <span x-show="!gelap" x-transition.scale.origin.center class="text-xl">🌙</span>
                     <span x-show="gelap" x-cloak x-transition.scale.origin.center class="text-xl">☀️</span>
@@ -134,12 +166,14 @@
     @endif
 
     {{-- ===== ISI HALAMAN ===== --}}
-    <main>
+    {{-- overflow-x-clip: hiasan yang keluar dari layar dipotong,
+         supaya halaman tidak bisa "digeser ke samping" di HP --}}
+    <main class="overflow-x-clip">
         {{ $slot }}
     </main>
 
     {{-- ===== FOOTER ===== --}}
-    <footer class="mt-24 border-t border-stone-200/70 bg-white/60 dark:border-stone-800 dark:bg-stone-900/60">
+    <footer class="mt-24 border-t border-stone-200/70 bg-white/60 print:hidden dark:border-stone-800 dark:bg-stone-900/60">
         <div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-3">
             <div>
                 <a href="{{ url('/') }}" class="flex items-center gap-2">
@@ -163,6 +197,21 @@
         </div>
         <p class="pb-8 text-center text-sm text-stone-400">© {{ date('Y') }} Dapurku. Dibuat dengan ❤️ dan sedikit garam.</p>
     </footer>
+
+    {{-- ===== TOMBOL KEMBALI KE ATAS =====
+         Muncul setelah halaman digulir cukup jauh --}}
+    <button type="button" aria-label="Kembali ke atas"
+        x-data="{ tampil: false }"
+        @scroll.window.throttle.100ms="tampil = window.scrollY > 900"
+        x-show="tampil" x-cloak
+        x-transition:enter="transition duration-300 ease-out"
+        x-transition:enter-start="translate-y-4 opacity-0"
+        x-transition:leave="transition duration-200 ease-in"
+        x-transition:leave-end="translate-y-4 opacity-0"
+        @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
+        class="fixed bottom-6 right-6 z-40 grid size-12 place-items-center rounded-full bg-primer-500 text-white shadow-xl shadow-primer-500/30 transition hover:-translate-y-1 hover:bg-primer-600 active:scale-90 print:hidden">
+        <svg class="size-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M5 12l7-7 7 7" /></svg>
+    </button>
 
     @livewireScripts
 </body>
