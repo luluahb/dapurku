@@ -13,14 +13,14 @@ class HalamanController extends Controller
         // Semua kategori + jumlah resepnya (hasilnya ada di $k->resep_count)
         $kategori = Kategori::withCount('resep')->get();
 
-        // with('user', 'kategori') = eager loading: ambil penulis & kategori sekaligus,
-        // supaya tidak ada query tambahan untuk tiap kartu resep
-        $resepPopuler = Resep::with('user', 'kategori')
+        // untukKartu() = local scope di model Resep: ambil penulis, kategori,
+        // rata-rata rating, dan jumlah komentar sekaligus (eager loading)
+        $resepPopuler = Resep::untukKartu()
             ->orderByDesc('dilihat') // paling sering dibuka di atas
             ->take(3)
             ->get();
 
-        $resepTerbaru = Resep::with('user', 'kategori')
+        $resepTerbaru = Resep::untukKartu()
             ->latest() // created_at paling baru di atas
             ->take(4)
             ->get();

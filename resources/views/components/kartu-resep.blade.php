@@ -1,7 +1,7 @@
 {{--
     Komponen kartu resep. Sekarang cukup dikirimi satu model Resep:
     <x-kartu-resep :resep="$resep" />
-    Ambil resepnya dengan ->with('user', 'kategori') supaya tidak ada query tambahan per kartu.
+    Ambil resepnya dengan Resep::untukKartu() supaya penulis, kategori, dan rating ikut terambil.
 --}}
 @props(['resep'])
 
@@ -35,18 +35,11 @@
         {{ $resep->kategori->nama }}
     </span>
 
-    {{-- Tombol suka: masih tampilan saja (belum tersimpan). Jumlah asli dibuat di tahap fitur Suka. --}}
-    <button type="button" aria-label="Suka"
-        x-data="{ disukai: false, jumlah: 0, pop: false }"
-        @click="disukai = !disukai; jumlah += disukai ? 1 : -1; pop = true; setTimeout(() => pop = false, 300)"
-        :class="pop && 'scale-125'"
-        class="absolute right-4 top-4 flex items-center gap-1 rounded-full bg-white/90 px-3 py-1.5 text-sm font-semibold shadow-sm backdrop-blur transition-transform duration-300 active:scale-90 dark:bg-stone-900/90">
-        <svg class="size-4 transition-colors" :class="disukai ? 'fill-rose-500 text-rose-500' : 'fill-none text-stone-500'"
-            stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linejoin="round" d="M12 21s-7.5-4.6-9.5-9.3C1.2 8.4 3.3 5 6.8 5c2 0 3.6 1.1 4.2 2.6h2C13.6 6.1 15.2 5 17.2 5c3.5 0 5.6 3.4 4.3 6.7C19.5 16.4 12 21 12 21z" />
-        </svg>
-        <span x-text="jumlah" class="tabular-nums"></span>
-    </button>
+    {{-- Tombol suka & simpan (komponen terpisah, lihat tombol-suka.blade.php & tombol-simpan.blade.php) --}}
+    <div class="absolute right-4 top-4 flex items-center gap-2">
+        <x-tombol-simpan :resep="$resep" />
+        <x-tombol-suka :resep="$resep" />
+    </div>
 
     <div class="p-5">
         <a href="{{ $href }}">
@@ -55,7 +48,12 @@
 
         <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-stone-500 dark:text-stone-400">
             <span>⏱️ {{ $resep->waktu }} menit</span>
-            <span>👀 {{ $resep->dilihat }}</span>
+            {{-- Rating tampil kalau sudah ada ulasan; kalau belum, tampilkan jumlah dilihat --}}
+            @if ($resep->komentar_count)
+                <span><span class="text-amber-500">★</span> <span class="font-semibold text-stone-700 dark:text-stone-200">{{ number_format($resep->komentar_avg_rating, 1, ',') }}</span> ({{ $resep->komentar_count }})</span>
+            @else
+                <span>👀 {{ $resep->dilihat }}</span>
+            @endif
             <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold {{ $warnaKesulitan }}">{{ $resep->kesulitan }}</span>
         </div>
 

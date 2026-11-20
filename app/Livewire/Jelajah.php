@@ -30,7 +30,7 @@ class Jelajah extends Component
     public string $kesulitan = ''; // Mudah / Sedang / Sulit
 
     #[Url(except: 'terbaru')]
-    public string $urut = 'terbaru'; // terbaru / populer / tercepat
+    public string $urut = 'terbaru'; // terbaru / populer / rating / tercepat
 
     // Berapa resep yang ditampilkan. Bertambah 6 setiap kali digulir ke bawah.
     public int $jumlah = 6;
@@ -90,13 +90,17 @@ class Jelajah extends Component
         $total = (clone $query)->count();
 
         // Urutkan sesuai pilihan
+        // untukKartu() dipasang di sini karena urutan "rating" butuh kolom komentar_avg_rating
+        $query->untukKartu();
+
         match ($this->urut) {
             'populer' => $query->orderByDesc('dilihat'),
             'tercepat' => $query->orderBy('waktu'),
+            'rating' => $query->orderByDesc('komentar_avg_rating')->orderByDesc('komentar_count'),
             default => $query->latest(),
         };
 
-        $resep = $query->with('user', 'kategori')->take($this->jumlah)->get();
+        $resep = $query->take($this->jumlah)->get();
 
         return view('livewire.jelajah', [
             'resep' => $resep,

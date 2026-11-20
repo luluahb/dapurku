@@ -13,7 +13,7 @@ class Resep extends Model
 
     protected $fillable = [
         'user_id', 'kategori_id', 'judul', 'slug', 'deskripsi',
-        'foto', 'waktu', 'porsi', 'kesulitan', 'dilihat',
+        'foto', 'waktu', 'porsi', 'kesulitan', 'dilihat', 'suka',
     ];
 
     // ===== Otomatis membuat slug dari judul =====
@@ -59,6 +59,23 @@ class Resep extends Model
     public function langkah()
     {
         return $this->hasMany(Langkah::class)->orderBy('urutan');
+    }
+
+    // Resep ini punya banyak komentar, yang terbaru di atas
+    public function komentar()
+    {
+        return $this->hasMany(Komentar::class)->latest();
+    }
+
+    // ===== Local scope: query yang sering dipakai, diberi nama =====
+    // Dipakai dengan Resep::untukKartu()->...
+    // Isinya semua yang dibutuhkan komponen kartu-resep:
+    // penulis, kategori, rata-rata rating, dan jumlah komentar.
+    public function scopeUntukKartu($query)
+    {
+        return $query->with('user', 'kategori')
+            ->withAvg('komentar', 'rating')  // hasilnya: $resep->komentar_avg_rating
+            ->withCount('komentar');         // hasilnya: $resep->komentar_count
     }
 
     // ===== Accessor: kolom "buatan" =====

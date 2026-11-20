@@ -86,6 +86,7 @@
                 class="cursor-pointer rounded-full bg-white px-4 py-1.5 text-sm font-semibold ring-1 ring-stone-200 outline-none focus:ring-2 focus:ring-primer-400 dark:bg-stone-900 dark:ring-stone-800">
                 <option value="terbaru">✨ Terbaru</option>
                 <option value="populer">🔥 Terpopuler</option>
+                <option value="rating">⭐ Rating tertinggi</option>
                 <option value="tercepat">⏱️ Tercepat dimasak</option>
             </select>
         </label>

@@ -47,6 +47,22 @@
 
                     <h1 class="mt-4 font-judul text-4xl font-bold leading-tight tracking-tight sm:text-5xl">{{ $resep->judul }}</h1>
 
+                    {{-- Ringkasan rating, klik untuk turun ke bagian komentar --}}
+                    @php
+                        // Dua angka ini dihitung di controller (loadCount & loadAvg)
+                        $jumlahUlasan = $resep->komentar_count;
+                        $rataRata = $resep->komentar_avg_rating;
+                    @endphp
+                    <a href="#komentar" class="mt-3 inline-flex items-center gap-2 text-sm hover:text-primer-600">
+                        @if ($jumlahUlasan)
+                            <span class="text-lg tracking-wider text-amber-400">{{ str_repeat('★', (int) round($rataRata)) }}<span class="text-stone-300 dark:text-stone-600">{{ str_repeat('★', 5 - (int) round($rataRata)) }}</span></span>
+                            <span class="font-semibold">{{ number_format($rataRata, 1, ',') }}</span>
+                            <span class="text-stone-500">· {{ $jumlahUlasan }} ulasan</span>
+                        @else
+                            <span class="text-stone-500">☆ Belum ada ulasan, jadilah yang pertama</span>
+                        @endif
+                    </a>
+
                     <p class="mt-4 text-lg text-stone-600 dark:text-stone-400">{{ $resep->deskripsi }}</p>
 
                     {{-- Penulis --}}
@@ -87,17 +103,9 @@
 
                     {{-- Tombol aksi --}}
                     <div class="mt-6 flex flex-wrap gap-3">
-                        {{-- Suka & Simpan: masih tampilan saja, disimpan ke database di tahap berikutnya --}}
-                        <button type="button" x-data="{ aktif: false }" @click="aktif = !aktif"
-                            :class="aktif ? 'bg-rose-500 text-white shadow-rose-500/30 ring-rose-500' : 'bg-white ring-stone-200 dark:bg-stone-900 dark:ring-stone-700'"
-                            class="inline-flex items-center gap-2 rounded-full px-5 py-3 font-semibold shadow-lg ring-1 transition active:scale-95">
-                            <span x-text="aktif ? '❤️' : '🤍'"></span> Suka
-                        </button>
-                        <button type="button" x-data="{ aktif: false }" @click="aktif = !aktif"
-                            :class="aktif ? 'bg-daun-500 text-white shadow-daun-500/30 ring-daun-500' : 'bg-white ring-stone-200 dark:bg-stone-900 dark:ring-stone-700'"
-                            class="inline-flex items-center gap-2 rounded-full px-5 py-3 font-semibold shadow-lg ring-1 transition active:scale-95">
-                            🔖 <span x-text="aktif ? 'Tersimpan' : 'Simpan'"></span>
-                        </button>
+                        {{-- Komponen yang sama dengan di kartu, tapi ukuran besar --}}
+                        <x-tombol-suka :resep="$resep" ukuran="besar" />
+                        <x-tombol-simpan :resep="$resep" ukuran="besar" />
                         {{-- Bagikan: menyalin alamat halaman ini ke clipboard --}}
                         <button type="button" x-data="{ tersalin: false }"
                             @click="navigator.clipboard.writeText(location.href); tersalin = true; setTimeout(() => tersalin = false, 2000)"
@@ -208,6 +216,11 @@
             </div>
         </div>
     </section>
+
+    {{-- ===================== KOMENTAR (komponen Livewire) =====================
+         Komponen Livewire bisa ditaruh di halaman Blade biasa seperti ini.
+         :resep="$resep" = kirim resep ke property public $resep di KomentarResep.php --}}
+    <livewire:komentar-resep :resep="$resep" />
 
     {{-- ===================== RESEP LAINNYA ===================== --}}
     @if ($resepLain->isNotEmpty())

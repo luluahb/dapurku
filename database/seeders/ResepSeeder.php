@@ -144,6 +144,18 @@ class ResepSeeder extends Seeder
             ],
         ];
 
+        // Bahan komentar contoh: [nama, rating, isi]
+        $contohKomentar = [
+            ['Anisa', 5, 'Sudah dicoba dan keluarga suka banget! Langkahnya jelas dan mudah diikuti.'],
+            ['Pak Harto', 4, 'Enak, tapi saya kurangi sedikit garamnya. Selebihnya mantap.'],
+            ['Dewi', 5, 'Resep andalan baru di rumah. Terima kasih sudah berbagi!'],
+            ['Reza', 4, 'Rasanya pas. Waktu masaknya agak lebih lama di kompor saya.'],
+            ['Mbak Tari', 5, 'Anak-anak minta dibuatkan lagi besok. Juara!'],
+            ['Yoga', 3, 'Lumayan enak, mungkin lain kali saya tambah cabai biar lebih nendang.'],
+            ['Citra', 5, 'Takarannya pas, hasilnya mirip yang di warung langganan.'],
+            ['Bayu', 4, 'Gampang dibuat buat anak kos. Mantap!'],
+        ];
+
         // ===== 3. Simpan ke database =====
         $jumlah = count($daftarResep);
 
@@ -158,6 +170,7 @@ class ResepSeeder extends Seeder
                 'porsi' => $data['porsi'],
                 'kesulitan' => $data['kesulitan'],
                 'dilihat' => random_int(20, 900),
+                'suka' => random_int(3, 120),
             ]);
 
             // Buat tanggal "seolah-olah" ditulis beberapa hari lalu,
@@ -171,6 +184,13 @@ class ResepSeeder extends Seeder
             }
             foreach ($data['langkah'] as $n => $isi) {
                 $resep->langkah()->create(['urutan' => $n + 1, 'isi' => $isi]);
+            }
+
+            // Komentar contoh: 0–4 komentar acak per resep
+            foreach (collect($contohKomentar)->shuffle()->take(random_int(0, 4)) as [$nama, $rating, $isi]) {
+                $komentar = $resep->komentar()->make(['nama' => $nama, 'rating' => $rating, 'isi' => $isi]);
+                $komentar->created_at = $resep->created_at->addHours(random_int(2, 72));
+                $komentar->save();
             }
         }
     }

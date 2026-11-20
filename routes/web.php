@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\HalamanController;
 use App\Http\Controllers\ResepController;
+use App\Livewire\Favoritku;
 use App\Livewire\Jelajah;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,12 @@ Route::get('/', [HalamanController::class, 'beranda'])->name('beranda');
 // Detail resep. {resep} dicari lewat SLUG (lihat getRouteKeyName di model Resep),
 // contoh: /resep/rendang-daging-sapi-empuk-bumbu-meresap
 Route::get('/resep/{resep}', [ResepController::class, 'show'])->name('resep.show');
+
+// Tombol ❤️: dipanggil lewat fetch() dari JavaScript. throttle:30,1 = maks 30 kali per menit.
+Route::post('/resep/{resep}/suka', [ResepController::class, 'suka'])->name('resep.suka')->middleware('throttle:30,1');
+
+// Halaman resep yang disimpan pengunjung (daftarnya ada di browser, bukan di database)
+Route::livewire('/favoritku', Favoritku::class)->name('favoritku');
 
 // Halaman Jelajah: langsung memakai komponen Livewire sebagai satu halaman penuh (tanpa controller)
 Route::livewire('/jelajah', Jelajah::class)->name('jelajah');

@@ -13,6 +13,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ? $title . ' · Dapurku' : 'Dapurku · Resep Masakan Rumahan' }}</title>
     <meta name="description" content="Dapurku: temukan dan bagikan resep masakan rumahan favoritmu.">
+    {{-- Token keamanan untuk request POST dari JavaScript (tombol suka) --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     {{-- Pasang mode gelap SEBELUM halaman tampil, supaya tidak "berkedip" putih --}}
     <script>
@@ -52,6 +54,15 @@
             </div>
 
             <div class="flex items-center gap-2">
+                {{-- Favoritku + angka jumlah resep tersimpan (ikut berubah saat tombol 🔖 diklik) --}}
+                <a href="{{ route('favoritku') }}" aria-label="Favoritku" title="Favoritku"
+                    x-data="jumlahSimpan()" @simpan-berubah.window="jumlah = $event.detail.length"
+                    class="relative grid size-10 place-items-center rounded-full transition hover:bg-primer-100 active:scale-90 dark:hover:bg-stone-800">
+                    <svg class="size-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linejoin="round" d="M6 4h12v17l-6-4-6 4V4z" /></svg>
+                    <span x-show="jumlah > 0" x-cloak x-text="jumlah" x-transition.scale
+                        class="absolute -right-0.5 -top-0.5 grid h-5 min-w-5 place-items-center rounded-full bg-daun-500 px-1 text-[11px] font-bold text-white"></span>
+                </a>
+
                 {{-- Tombol mode gelap --}}
                 <button type="button" aria-label="Ganti tema"
                     x-data="{ gelap: document.documentElement.classList.contains('dark') }"
@@ -93,6 +104,7 @@
             <a href="{{ url('/') }}" class="block rounded-2xl px-4 py-3 font-medium hover:bg-primer-50 dark:hover:bg-stone-800">🏠 Beranda</a>
             <a href="{{ route('jelajah') }}" class="block rounded-2xl px-4 py-3 font-medium hover:bg-primer-50 dark:hover:bg-stone-800">🔍 Jelajah Resep</a>
             <a href="{{ route('beranda') }}#kategori" class="block rounded-2xl px-4 py-3 font-medium hover:bg-primer-50 dark:hover:bg-stone-800">🗂️ Kategori</a>
+            <a href="{{ route('favoritku') }}" class="block rounded-2xl px-4 py-3 font-medium hover:bg-primer-50 dark:hover:bg-stone-800">🔖 Favoritku</a>
             @can('admin')
                 <div class="mt-2 grid grid-cols-2 gap-2 border-t border-stone-100 pt-3 dark:border-stone-800">
                     <a href="{{ route('admin.resep.index') }}" class="rounded-2xl bg-primer-500 py-3 text-center font-semibold text-white">⚙️ Kelola</a>
