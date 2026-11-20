@@ -1,0 +1,66 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/* Mode gelap aktif kalau <html> punya class "dark" (diatur oleh tombol 🌙 di navbar) */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ===== Sistem desain Dapurku =====
+   Semua warna & font didefinisikan di sini, lalu dipakai di HTML lewat class Tailwind.
+   Contoh: --color-primer-500 → class "bg-primer-500", "text-primer-500" */
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+    --font-judul: 'Fraunces', ui-serif, Georgia, serif;
+
+    /* Warna utama: oranye terakota, hangat seperti dapur */
+    --color-primer-50: #fff6ed;
+    --color-primer-100: #ffead4;
+    --color-primer-200: #ffd0a8;
+    --color-primer-300: #ffae71;
+    --color-primer-400: #ff8038;
+    --color-primer-500: #fb5d12;
+    --color-primer-600: #ec4208;
+    --color-primer-700: #c42f09;
+    --color-primer-800: #9b2710;
+    --color-primer-900: #7d2410;
+
+    /* Warna pendamping: hijau daun (untuk label "mudah", sayuran, dll.) */
+    --color-daun-100: #dcf5e3;
+    --color-daun-500: #22a05a;
+    --color-daun-700: #157443;
+
+    /* Latar krem lembut */
+    --color-krem: #fffaf3;
+
+    /* Animasi melayang untuk foto di bagian hero */
+    --animate-melayang: melayang 6s ease-in-out infinite;
+    --animate-melayang-lambat: melayang 8s ease-in-out infinite;
+
+    @keyframes melayang {
+        0%, 100% { transform: translateY(0) rotate(var(--putar, 0deg)); }
+        50% { transform: translateY(-14px) rotate(var(--putar, 0deg)); }
+    }
+
+    /* Animasi muncul untuk kartu yang baru ditampilkan (halaman Jelajah) */
+    --animate-muncul: muncul 0.5s ease-out both;
+
+    @keyframes muncul {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+}
+
+/* Mode gelap: kontrol bawaan browser (checkbox, select, scrollbar) ikut gelap */
+.dark {
+    color-scheme: dark;
+}
+
+/* Elemen dengan x-cloak disembunyikan sampai Alpine.js siap (mencegah "kedip") */
+[x-cloak] {
+    display: none !important;
+}
+
+html {
+    scroll-behavior: smooth;
+}
