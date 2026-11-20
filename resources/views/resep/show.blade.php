@@ -14,7 +14,8 @@
     <section class="relative overflow-hidden">
         <div class="pointer-events-none absolute -right-32 -top-32 size-[28rem] rounded-full bg-primer-300/30 blur-3xl dark:bg-primer-700/15"></div>
 
-        <div class="relative mx-auto max-w-6xl px-4 pt-6 sm:px-6">
+        {{-- pb-10: ruang di bawah tombol, supaya bayangannya tidak terpotong overflow-hidden --}}
+        <div class="relative mx-auto max-w-6xl px-4 pb-10 pt-6 sm:px-6 print:pb-0">
             {{-- Breadcrumb: jejak lokasi halaman --}}
             <nav class="flex flex-wrap items-center gap-2 text-sm text-stone-500 print:hidden dark:text-stone-400">
                 <a href="{{ route('beranda') }}" class="hover:text-primer-600">Beranda</a>
@@ -119,13 +120,13 @@
                                         tersalin = true;
                                         setTimeout(() => tersalin = false, 2000);
                                     }"
-                            class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-semibold shadow-lg ring-1 ring-stone-200 transition active:scale-95 dark:bg-stone-900 dark:ring-stone-700">
+                            class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-semibold shadow-sm ring-1 ring-stone-200 transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 dark:bg-stone-900 dark:shadow-none dark:ring-stone-700">
                             <span x-text="tersalin ? '✅ Link tersalin!' : '🔗 Bagikan'">🔗 Bagikan</span>
                         </button>
                         {{-- Cetak: membuka jendela print browser. Bagian yang tidak perlu (navbar, tombol,
                              komentar) disembunyikan dengan class print:hidden --}}
                         <button type="button" @click="window.print()"
-                            class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-semibold shadow-lg ring-1 ring-stone-200 transition active:scale-95 dark:bg-stone-900 dark:ring-stone-700">
+                            class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-semibold shadow-sm ring-1 ring-stone-200 transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 dark:bg-stone-900 dark:shadow-none dark:ring-stone-700">
                             🖨️ Cetak
                         </button>
                     </div>

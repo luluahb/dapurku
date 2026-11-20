@@ -40,11 +40,12 @@
 
     {{-- ===================== FILTER KATEGORI ===================== --}}
     {{-- @class: menyusun class sesuai kondisi. Class yang nilainya true saja yang dipakai. --}}
-    <div class="scrollbar-none -mx-4 mt-8 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+    {{-- py-3: ruang atas-bawah, karena overflow-x-auto juga memotong bayangan tombol yang dipilih --}}
+    <div class="scrollbar-none -mx-4 mt-5 flex gap-2 overflow-x-auto px-4 py-3 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
         <button type="button" wire:click="$set('kategori', '')"
             @class([
                 'shrink-0 rounded-full px-4 py-2 text-sm font-semibold ring-1 transition active:scale-95',
-                'bg-primer-500 text-white shadow-lg shadow-primer-500/30 ring-primer-500' => $kategori === '',
+                'bg-primer-500 text-white shadow-md shadow-primer-500/25 ring-primer-500' => $kategori === '',
                 'bg-white ring-stone-200 hover:ring-primer-300 dark:bg-stone-900 dark:ring-stone-800' => $kategori !== '',
             ])>
             🍽️ Semua
@@ -53,7 +54,7 @@
             <button type="button" wire:click="pilihKategori('{{ $item->slug }}')"
                 @class([
                     'shrink-0 rounded-full px-4 py-2 text-sm font-semibold ring-1 transition active:scale-95',
-                    'bg-primer-500 text-white shadow-lg shadow-primer-500/30 ring-primer-500' => $kategori === $item->slug,
+                    'bg-primer-500 text-white shadow-md shadow-primer-500/25 ring-primer-500' => $kategori === $item->slug,
                     'bg-white ring-stone-200 hover:ring-primer-300 dark:bg-stone-900 dark:ring-stone-800' => $kategori !== $item->slug,
                 ])>
                 {{ $item->ikon }} {{ $item->nama }}
