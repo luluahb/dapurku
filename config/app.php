@@ -67,6 +67,10 @@ return [
 
     'timezone' => env('APP_TIMEZONE', 'UTC'),
 
+    // Kode rahasia untuk halaman /_pasang/{kode} (menjalankan migrate + seed di hosting).
+    // Kosongkan (hapus variabelnya) setelah selesai, supaya halaman itu mati.
+    'setup_token' => env('SETUP_TOKEN'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration
