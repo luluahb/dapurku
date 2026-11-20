@@ -15,6 +15,14 @@
     $judulHalaman = $title ? $title . ' · Dapurku' : 'Dapurku · Resep Masakan Rumahan';
     $deskripsi = Str::limit($description ?? 'Temukan resep masakan rumahan, cari berdasarkan bahan yang ada di dapurmu, dan simpan resep favoritmu.', 160);
     $gambarPratinjau = $gambar ?? asset('images/og-dapurku.png');
+
+    // Daftar menu navigasi (dipakai di menu laptop & menu HP).
+    // 'aktif' = true kalau halaman ini sedang dibuka → menunya diberi warna penanda.
+    $menu = [
+        ['label' => 'Beranda', 'ikon' => '🏠', 'url' => route('beranda'), 'aktif' => request()->routeIs('beranda')],
+        ['label' => 'Jelajah Resep', 'ikon' => '🔍', 'url' => route('jelajah'), 'aktif' => request()->routeIs('jelajah')],
+        ['label' => 'Kategori', 'ikon' => '🗂️', 'url' => route('beranda') . '#kategori', 'aktif' => false],
+    ];
 @endphp
 
 <!DOCTYPE html>
@@ -80,9 +88,14 @@
 
             {{-- Menu (laptop) --}}
             <div class="hidden items-center gap-1 md:flex">
-                <a href="{{ url('/') }}" class="rounded-full px-4 py-2 font-medium transition hover:bg-primer-100 hover:text-primer-700 dark:hover:bg-stone-800">Beranda</a>
-                <a href="{{ route('jelajah') }}" class="rounded-full px-4 py-2 font-medium transition hover:bg-primer-100 hover:text-primer-700 dark:hover:bg-stone-800">Jelajah Resep</a>
-                <a href="{{ route('beranda') }}#kategori" class="rounded-full px-4 py-2 font-medium transition hover:bg-primer-100 hover:text-primer-700 dark:hover:bg-stone-800">Kategori</a>
+                @foreach ($menu as $item)
+                    {{-- aria-current: memberi tahu pembaca layar (tunanetra) bahwa ini halaman yang sedang dibuka --}}
+                    <a href="{{ $item['url'] }}" @if ($item['aktif']) aria-current="page" @endif
+                        @class([
+                            'rounded-full px-4 py-2 font-medium transition hover:bg-primer-100 hover:text-primer-700 active:scale-95 active:bg-primer-100 dark:hover:bg-stone-800 dark:active:bg-stone-800',
+                            'bg-primer-100 text-primer-700 dark:bg-stone-800 dark:text-primer-300' => $item['aktif'],
+                        ])>{{ $item['label'] }}</a>
+                @endforeach
             </div>
 
             <div class="flex items-center gap-2">
@@ -118,7 +131,7 @@
 
                 {{-- Tombol menu (HP) --}}
                 <button type="button" @click="menuTerbuka = !menuTerbuka" aria-label="Buka menu"
-                    class="grid size-10 place-items-center rounded-full transition hover:bg-primer-100 md:hidden dark:hover:bg-stone-800">
+                    class="grid size-10 place-items-center rounded-full transition hover:bg-primer-100 active:scale-90 active:bg-primer-100 md:hidden dark:hover:bg-stone-800 dark:active:bg-stone-800">
                     <svg x-show="!menuTerbuka" class="size-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" /></svg>
                     <svg x-show="menuTerbuka" x-cloak class="size-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" /></svg>
                 </button>
@@ -133,10 +146,23 @@
             x-transition:leave-end="-translate-y-4 opacity-0"
             @click.outside="menuTerbuka = false"
             class="mx-4 mb-3 rounded-3xl bg-white p-3 shadow-xl md:hidden dark:bg-stone-900">
-            <a href="{{ url('/') }}" class="block rounded-2xl px-4 py-3 font-medium hover:bg-primer-50 dark:hover:bg-stone-800">🏠 Beranda</a>
-            <a href="{{ route('jelajah') }}" class="block rounded-2xl px-4 py-3 font-medium hover:bg-primer-50 dark:hover:bg-stone-800">🔍 Jelajah Resep</a>
-            <a href="{{ route('beranda') }}#kategori" class="block rounded-2xl px-4 py-3 font-medium hover:bg-primer-50 dark:hover:bg-stone-800">🗂️ Kategori</a>
-            <a href="{{ route('favoritku') }}" class="block rounded-2xl px-4 py-3 font-medium hover:bg-primer-50 dark:hover:bg-stone-800">🔖 Favoritku</a>
+            {{-- Menu HP: sama seperti menu laptop + Favoritku.
+                 active: = warna saat jari menekan (di HP tidak ada hover).
+                 @click menutup menu, penting untuk link "Kategori" yang hanya menggulir di halaman yang sama. --}}
+            @foreach ([...$menu, ['label' => 'Favoritku', 'ikon' => '🔖', 'url' => route('favoritku'), 'aktif' => request()->routeIs('favoritku')]] as $item)
+                <a href="{{ $item['url'] }}" @click="menuTerbuka = false" @if ($item['aktif']) aria-current="page" @endif
+                    @class([
+                        'flex items-center gap-2 rounded-2xl px-4 py-3 font-medium transition hover:bg-primer-50 active:scale-[0.98] active:bg-primer-100 active:text-primer-700 dark:hover:bg-stone-800 dark:active:bg-stone-800',
+                        'bg-primer-50 font-semibold text-primer-700 dark:bg-stone-800 dark:text-primer-300' => $item['aktif'],
+                    ])>
+                    <span>{{ $item['ikon'] }}</span>
+                    <span class="flex-1">{{ $item['label'] }}</span>
+                    @if ($item['aktif'])
+                        {{-- Titik kecil penanda halaman yang sedang dibuka --}}
+                        <span class="size-2 rounded-full bg-primer-500"></span>
+                    @endif
+                </a>
+            @endforeach
             @can('admin')
                 <div class="mt-2 grid grid-cols-2 gap-2 border-t border-stone-100 pt-3 dark:border-stone-800">
                     <a href="{{ route('admin.resep.index') }}" class="rounded-2xl bg-primer-500 py-3 text-center font-semibold text-white">⚙️ Kelola</a>
@@ -185,9 +211,9 @@
             <div>
                 <h3 class="font-semibold">Jelajahi</h3>
                 <ul class="mt-3 space-y-2 text-sm text-stone-500 dark:text-stone-400">
-                    <li><a href="{{ route('jelajah') }}" class="hover:text-primer-600">Semua resep</a></li>
-                    <li><a href="{{ route('beranda') }}#kategori" class="hover:text-primer-600">Kategori</a></li>
-                    <li><a href="{{ route('jelajah', ['urut' => 'populer']) }}" class="hover:text-primer-600">Resep terpopuler</a></li>
+                    <li><a href="{{ route('jelajah') }}" class="transition hover:text-primer-600 active:text-primer-600">Semua resep</a></li>
+                    <li><a href="{{ route('beranda') }}#kategori" class="transition hover:text-primer-600 active:text-primer-600">Kategori</a></li>
+                    <li><a href="{{ route('jelajah', ['urut' => 'populer']) }}" class="transition hover:text-primer-600 active:text-primer-600">Resep terpopuler</a></li>
                 </ul>
             </div>
             <div>

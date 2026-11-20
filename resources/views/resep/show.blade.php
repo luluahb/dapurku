@@ -18,9 +18,9 @@
         <div class="relative mx-auto max-w-6xl px-4 pb-10 pt-6 sm:px-6 print:pb-0">
             {{-- Breadcrumb: jejak lokasi halaman --}}
             <nav class="flex flex-wrap items-center gap-2 text-sm text-stone-500 print:hidden dark:text-stone-400">
-                <a href="{{ route('beranda') }}" class="hover:text-primer-600">Beranda</a>
+                <a href="{{ route('beranda') }}" class="transition hover:text-primer-600 active:text-primer-600">Beranda</a>
                 <span>/</span>
-                <a href="{{ route('jelajah', ['kategori' => $resep->kategori->slug]) }}" class="hover:text-primer-600">{{ $resep->kategori->nama }}</a>
+                <a href="{{ route('jelajah', ['kategori' => $resep->kategori->slug]) }}" class="transition hover:text-primer-600 active:text-primer-600">{{ $resep->kategori->nama }}</a>
                 <span>/</span>
                 <span class="line-clamp-1 font-medium text-stone-700 dark:text-stone-200">{{ $resep->judul }}</span>
             </nav>
