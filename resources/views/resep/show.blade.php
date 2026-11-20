@@ -125,8 +125,10 @@
                             <span x-text="tersalin ? '✅ Link tersalin!' : '🔗 Bagikan'">🔗 Bagikan</span>
                         </button>
                         {{-- Cetak: membuka jendela print browser. Bagian yang tidak perlu (navbar, tombol,
-                             komentar) disembunyikan dengan class print:hidden --}}
-                        <button type="button" @click="window.print()"
+                             komentar) disembunyikan dengan class print:hidden.
+                             x-data WAJIB ada: @click Alpine hanya bekerja di dalam komponen Alpine (x-data).
+                             Tanpa x-data, klik tombol ini diabaikan begitu saja. --}}
+                        <button type="button" x-data @click="window.print()"
                             class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-3 font-semibold shadow-sm ring-1 ring-stone-200 transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 dark:bg-stone-900 dark:shadow-none dark:ring-stone-700">
                             🖨️ Cetak
                         </button>
