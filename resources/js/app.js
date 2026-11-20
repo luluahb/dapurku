@@ -96,3 +96,27 @@ document.addEventListener('alpine:init', () => {
 
 // Dipakai halaman Favoritku untuk membaca daftar id yang tersimpan
 window.ambilResepTersimpan = () => penyimpanan.ambil('dapurku-simpan');
+
+// ===== Animasi "foto terbang" ke halaman detail (View Transitions) =====
+// Saat link kartu resep diklik, foto di kartu itu diberi nama "foto-resep".
+// Foto besar di halaman detail juga bernama "foto-resep" (lihat resep/show.blade.php),
+// jadi browser menganimasikan foto dari kartu ke posisinya di halaman detail.
+// Nama hanya diberikan ke SATU foto (yang diklik), karena nama yang kembar membatalkan animasi.
+document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[data-kartu-link]');
+    if (!link) return;
+
+    document.querySelectorAll('[data-foto-resep]').forEach((foto) => {
+        foto.style.viewTransitionName = '';
+    });
+    const foto = link.closest('article')?.querySelector('[data-foto-resep]');
+    if (foto) foto.style.viewTransitionName = 'foto-resep';
+});
+
+// Kembali dengan tombol Back: browser bisa memakai halaman lama dari memori,
+// jadi hapus nama tadi supaya klik berikutnya tetap bersih.
+window.addEventListener('pageshow', () => {
+    document.querySelectorAll('[data-foto-resep]').forEach((foto) => {
+        foto.style.viewTransitionName = '';
+    });
+});

@@ -86,7 +86,7 @@
         <div class="scrollbar-none -mx-4 mt-6 flex snap-x gap-4 overflow-x-auto px-4 pb-6 pt-2 sm:mx-0 sm:grid sm:grid-cols-4 sm:overflow-visible sm:px-0 lg:grid-cols-8">
             @foreach ($kategori as $item)
                 <a href="{{ route('jelajah', ['kategori' => $item->slug]) }}"
-                    class="group flex w-28 shrink-0 snap-start flex-col items-center gap-3 rounded-3xl bg-white p-4 text-center shadow-sm ring-1 ring-stone-200/70 transition duration-300 hover:-translate-y-1 hover:bg-primer-500 hover:shadow-xl hover:shadow-primer-500/20 sm:w-auto dark:bg-stone-900 dark:ring-stone-800 dark:hover:bg-primer-600">
+                    class="group flex w-28 shrink-0 snap-start flex-col items-center gap-3 rounded-3xl bg-white p-4 text-center shadow-sm ring-1 ring-stone-200/70 transition duration-300 hover:-translate-y-1 hover:bg-primer-500 hover:shadow-xl hover:shadow-primer-500/20 active:scale-95 active:bg-primer-500 sm:w-auto dark:bg-stone-900 dark:ring-stone-800 dark:hover:bg-primer-600">
                     <span class="grid size-14 place-items-center rounded-2xl bg-primer-50 text-3xl transition duration-300 group-hover:rotate-12 group-hover:scale-110 group-hover:bg-white/20 dark:bg-stone-800">{{ $item->ikon }}</span>
                     <span>
                         <span class="block text-sm font-semibold transition group-hover:text-white">{{ $item->nama }}</span>

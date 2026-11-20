@@ -77,6 +77,41 @@
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
+
+    /* Animasi perpindahan halaman juga dimatikan */
+    @view-transition {
+        navigation: none;
+    }
+}
+
+/* ===== Animasi perpindahan halaman (View Transitions) =====
+   Saat pindah halaman, browser membuat animasi otomatis:
+   - halaman lama memudar, halaman baru muncul
+   - elemen dengan "view-transition-name" yang sama di kedua halaman
+     (foto kartu → foto besar di detail) akan "terbang" dari posisi lama ke posisi baru.
+   Didukung Chrome, Edge, dan Safari versi baru. Browser lain tetap normal tanpa animasi. */
+@media (prefers-reduced-motion: no-preference) {
+    @view-transition {
+        navigation: auto;
+    }
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 250ms;
+}
+
+::view-transition-group(foto-resep) {
+    animation-duration: 450ms;
+    animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Di HP: hilangkan kotak abu-abu bawaan browser saat link/tombol ditekan.
+   Sebagai gantinya kita pakai efek "active:" (mengecil sedikit) yang lebih rapi. */
+a,
+button,
+label {
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Elemen dengan x-cloak disembunyikan sampai Alpine.js siap (mencegah "kedip") */

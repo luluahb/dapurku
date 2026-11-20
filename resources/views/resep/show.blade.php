@@ -29,7 +29,8 @@
             <div class="mt-6 grid items-center gap-10 lg:grid-cols-2 print:mt-0 print:grid-cols-[14rem_1fr] print:items-start print:gap-6">
                 {{-- Foto besar --}}
                 <div class="relative">
-                    <div class="aspect-[4/3] overflow-hidden rounded-[2rem] bg-primer-50 shadow-2xl shadow-stone-300/50 print:rounded-2xl print:shadow-none dark:bg-stone-800 dark:shadow-none">
+                    {{-- view-transition-name: tujuan animasi "foto terbang" dari kartu resep yang diklik --}}
+                    <div style="view-transition-name: foto-resep" class="aspect-[4/3] overflow-hidden rounded-[2rem] bg-primer-50 shadow-2xl shadow-stone-300/50 print:rounded-2xl print:shadow-none dark:bg-stone-800 dark:shadow-none">
                         @if ($resep->foto_url)
                             <img src="{{ $resep->foto_url }}" alt="{{ $resep->judul }}" class="size-full object-cover">
                         @else

@@ -18,13 +18,20 @@
     $penulis = $resep->user->name;
 @endphp
 
-<article {{ $attributes->merge(['class' => 'group relative overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-stone-200/70 transition duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-primer-500/10 dark:bg-stone-900 dark:ring-stone-800']) }}>
+{{--
+    Animasi:
+    - Laptop (ada mouse): hover → kartu naik, foto membesar.
+    - HP (layar sentuh, tidak ada hover): has-[a:active] → saat LINK di kartu sedang ditekan jari,
+      kartu sedikit mengecil & foto membesar. Menekan tombol suka/simpan tidak memicu efek ini.
+    - data-kartu-link & data-foto-resep dipakai app.js untuk animasi "foto terbang" ke halaman detail.
+--}}
+<article {{ $attributes->merge(['class' => 'group relative overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-stone-200/70 transition duration-300 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-primer-500/10 has-[a:active]:scale-[0.97] has-[a:active]:shadow-md dark:bg-stone-900 dark:ring-stone-800']) }}>
 
-    {{-- Foto: membesar perlahan saat di-hover. Kalau resep tidak punya foto, tampil ikon kategorinya. --}}
-    <a href="{{ $href }}" class="block aspect-[4/3] overflow-hidden bg-primer-50 dark:bg-stone-800">
+    {{-- Foto: membesar perlahan saat di-hover / ditekan. Kalau resep tidak punya foto, tampil ikon kategorinya. --}}
+    <a href="{{ $href }}" data-kartu-link data-foto-resep class="block aspect-[4/3] overflow-hidden bg-primer-50 dark:bg-stone-800">
         @if ($resep->foto_url)
             <img src="{{ $resep->foto_url }}" alt="{{ $resep->judul }}" loading="lazy"
-                class="size-full object-cover transition duration-700 ease-out group-hover:scale-110">
+                class="size-full object-cover transition duration-700 ease-out group-hover:scale-110 group-has-[a:active]:scale-110">
         @else
             <span class="grid size-full place-items-center text-6xl">{{ $resep->kategori->ikon }}</span>
         @endif
@@ -42,8 +49,8 @@
     </div>
 
     <div class="p-5">
-        <a href="{{ $href }}">
-            <h3 class="line-clamp-2 font-judul text-xl font-bold leading-snug transition-colors group-hover:text-primer-600">{{ $resep->judul }}</h3>
+        <a href="{{ $href }}" data-kartu-link>
+            <h3 class="line-clamp-2 font-judul text-xl font-bold leading-snug transition-colors group-hover:text-primer-600 group-has-[a:active]:text-primer-600">{{ $resep->judul }}</h3>
         </a>
 
         <div class="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-stone-500 dark:text-stone-400">
