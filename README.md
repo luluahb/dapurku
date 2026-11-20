@@ -36,7 +36,9 @@ Proyek ini saya buat sebagai proyek portofolio untuk belajar membangun aplikasi 
 - 🔖 **Simpan ke Favoritku**: tersimpan di browser, tanpa akun.
 - ⭐ **Ulasan dan rating bintang**: terkirim tanpa reload, lengkap dengan grafik sebaran bintang.
 - 🖨️ **Cetak resep** dengan tata letak khusus kertas, dan 🔗 **bagikan** lewat menu bagikan bawaan HP.
-- 🌙 **Mode gelap**, tampilan rapi di HP, dan animasi yang menghormati pengaturan "kurangi animasi".
+- ✨ **Animasi perpindahan halaman**: foto resep "terbang" dari kartu ke halaman detail (View Transitions).
+- 📱 **Nyaman di HP**: efek saat kartu dan menu ditekan, penanda menu halaman aktif, dan footer yang selalu di dasar layar.
+- 🌙 **Mode gelap**, dan semua animasi menghormati pengaturan "kurangi animasi".
 
 ### Untuk admin
 - 🔐 Login khusus admin (tanpa halaman daftar publik), dibatasi 5 percobaan per menit.
@@ -74,6 +76,8 @@ Proyek ini saya buat sebagai proyek portofolio untuk belajar membangun aplikasi 
 - **Fitur tanpa akun yang tetap jujur**: suka dicatat di session supaya tidak bisa ditambah berkali-kali, dan dibatasi dengan rate limiting. Komentar dibatasi 3 per menit per alamat IP.
 - **Keamanan**: Gate `admin`, `is_admin` sengaja tidak bisa diisi lewat form (mass assignment), CSRF untuk request dari JavaScript, dan `DB::transaction` saat menyimpan resep beserta bahan dan langkahnya.
 - **SEO dan pratinjau link**: meta description dan Open Graph per halaman, jadi link resep yang dibagikan ke WhatsApp tampil dengan foto dan deskripsinya.
+- **View Transitions lintas halaman** (`@view-transition`): foto pada kartu yang diklik diberi `view-transition-name` lewat JavaScript, sehingga browser menganimasikannya ke foto besar di halaman detail. Browser yang belum mendukung tetap membuka halaman secara normal.
+- **Desain untuk layar sentuh**: setiap efek `hover:` punya pasangan `active:` / `has-[a:active]:`, karena di HP tidak ada hover. Deretan kategori yang bisa digeser memakai `snap-x` + `scroll-px-4` supaya kartunya berhenti rapi di margin.
 - **Halaman error** (404, 403, 419, 429, 500) dengan desain yang konsisten.
 
 ## Menjalankan di komputer sendiri
