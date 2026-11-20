@@ -13,7 +13,7 @@
         'flex items-center gap-1.5 font-semibold transition duration-300 active:scale-90',
         'rounded-full bg-white/90 px-3 py-1.5 text-sm shadow-sm backdrop-blur dark:bg-stone-900/90' => $ukuran === 'kecil',
         // Bayangan tipis (shadow-sm), sedikit menebal & naik saat di-hover
-        'rounded-full bg-white px-5 py-3 shadow-sm ring-1 ring-stone-200 hover:-translate-y-0.5 hover:shadow-md dark:bg-stone-900 dark:shadow-none dark:ring-stone-700' => $ukuran === 'besar',
+        'rounded-full bg-white px-4 py-3 shadow-sm ring-1 ring-stone-200 hover:-translate-y-0.5 hover:shadow-md dark:bg-stone-900 dark:shadow-none dark:ring-stone-700' => $ukuran === 'besar',
     ]) }}>
     <svg @class(['transition-colors', 'size-4' => $ukuran === 'kecil', 'size-5' => $ukuran === 'besar'])
         :class="disukai ? 'fill-rose-500 text-rose-500' : 'fill-none text-stone-500'"

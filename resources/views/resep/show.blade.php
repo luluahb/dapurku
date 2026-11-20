@@ -105,11 +105,11 @@
                         </div>
                     </dl>
 
-                    {{-- Tombol aksi --}}
-                    <div class="mt-6 flex flex-wrap gap-3 print:hidden">
+                    {{-- Tombol aksi: grid 2×2 di HP & laptop kecil, 4 sejajar kalau ruangnya cukup --}}
+                    <div class="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 print:hidden">
                         {{-- Komponen yang sama dengan di kartu, tapi ukuran besar --}}
-                        <x-tombol-suka :resep="$resep" ukuran="besar" />
-                        <x-tombol-simpan :resep="$resep" ukuran="besar" />
+                        <x-tombol-suka :resep="$resep" ukuran="besar" class="justify-center" />
+                        <x-tombol-simpan :resep="$resep" ukuran="besar" class="justify-center" />
                         {{-- Bagikan:
                              - HP (dan browser yang mendukung): buka menu bagikan bawaan → WhatsApp, Telegram, dll.
                              - Selain itu: salin link ke clipboard --}}
@@ -121,13 +121,13 @@
                                         tersalin = true;
                                         setTimeout(() => tersalin = false, 2000);
                                     }"
-                            class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-semibold shadow-sm ring-1 ring-stone-200 transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 dark:bg-stone-900 dark:shadow-none dark:ring-stone-700">
+                            class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-3 font-semibold shadow-sm ring-1 ring-stone-200 transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 dark:bg-stone-900 dark:shadow-none dark:ring-stone-700">
                             <span x-text="tersalin ? '✅ Link tersalin!' : '🔗 Bagikan'">🔗 Bagikan</span>
                         </button>
                         {{-- Cetak: membuka jendela print browser. Bagian yang tidak perlu (navbar, tombol,
                              komentar) disembunyikan dengan class print:hidden --}}
                         <button type="button" @click="window.print()"
-                            class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-semibold shadow-sm ring-1 ring-stone-200 transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 dark:bg-stone-900 dark:shadow-none dark:ring-stone-700">
+                            class="inline-flex items-center justify-center gap-2 rounded-full bg-white px-4 py-3 font-semibold shadow-sm ring-1 ring-stone-200 transition hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 active:scale-95 dark:bg-stone-900 dark:shadow-none dark:ring-stone-700">
                             🖨️ Cetak
                         </button>
                     </div>

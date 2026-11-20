@@ -14,7 +14,7 @@
         'font-semibold transition active:scale-90',
         'grid size-9 place-items-center rounded-full shadow-sm backdrop-blur' => $ukuran === 'kecil',
         // Bayangan tipis (shadow-sm), sedikit menebal & naik saat di-hover
-        'flex items-center gap-1.5 rounded-full px-5 py-3 shadow-sm ring-1 hover:-translate-y-0.5 hover:shadow-md dark:shadow-none' => $ukuran === 'besar',
+        'flex items-center gap-1.5 rounded-full px-4 py-3 shadow-sm ring-1 hover:-translate-y-0.5 hover:shadow-md dark:shadow-none' => $ukuran === 'besar',
     ]) }}
     @if ($ukuran === 'kecil')
         :class="tersimpan ? 'bg-daun-500 text-white' : 'bg-white/90 text-stone-500 dark:bg-stone-900/90'"
