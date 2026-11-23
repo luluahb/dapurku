@@ -71,10 +71,35 @@ class ChefAiTest extends TestCase
             ->call('jawab'); // di browser, jawab() dipanggil otomatis setelah tanya()
     }
 
-    public function test_halaman_chef_ai_bisa_dibuka_dan_ada_di_menu(): void
+    public function test_widget_chef_ai_ada_di_halaman_pengunjung(): void
     {
-        $this->get('/chef-ai')->assertOk()->assertSee('Mau masak apa hari ini?');
-        $this->get('/')->assertSee(route('chef-ai'));
+        $this->get('/')->assertOk()->assertSeeLivewire(ChefAi::class)->assertSee('Mau masak apa hari ini?');
+        $this->get('/jelajah')->assertSeeLivewire(ChefAi::class);
+    }
+
+    public function test_widget_chef_ai_tidak_ada_di_halaman_admin(): void
+    {
+        $this->get('/admin/login')->assertOk()->assertDontSeeLivewire(ChefAi::class);
+    }
+
+    public function test_link_chef_ai_membuka_beranda_dengan_panel_terbuka(): void
+    {
+        $this->get('/chef-ai')->assertRedirect('/?chef-ai');
+    }
+
+    public function test_obrolan_tetap_ada_setelah_pindah_halaman(): void
+    {
+        $this->palsukanGemini();
+        $this->tanya('Ada santan, masak apa?');
+
+        // Komponen baru (= halaman baru dibuka) membaca obrolan dari session
+        Livewire::test(ChefAi::class)
+            ->assertSee('Ada santan, masak apa?')
+            ->assertSee('Coba Rendang, gurih dan pakai santan.')
+            ->call('mulaiUlang')
+            ->assertSet('percakapan', []);
+
+        $this->assertNull(session('chef-ai.percakapan'));
     }
 
     public function test_menjawab_dengan_resep_dari_database(): void

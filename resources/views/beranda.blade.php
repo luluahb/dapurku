@@ -133,9 +133,10 @@
                 <h2 class="font-judul text-3xl font-bold sm:text-4xl">Bingung mau masak apa?</h2>
                 <p class="mt-4 text-lg text-white/85">Ceritakan bahan yang ada di kulkasmu ke Chef AI, atau cari sendiri berdasarkan bahan, misalnya "telur" atau "santan".</p>
                 <div class="mt-8 flex flex-wrap gap-3">
-                    <a href="{{ route('chef-ai') }}" class="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 font-bold text-primer-700 shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:scale-95">
+                    {{-- $dispatch mengirim "acara" buka-chef-ai → widget Chef AI di pojok kanan bawah terbuka --}}
+                    <button type="button" x-data @click="$dispatch('buka-chef-ai')" class="inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 font-bold text-primer-700 shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 active:scale-95">
                         🧑‍🍳 Tanya Chef AI
-                    </a>
+                    </button>
                     <a href="{{ route('jelajah') }}" class="inline-flex items-center gap-2 rounded-full px-7 py-3.5 font-bold text-white ring-2 ring-white/60 transition hover:bg-white/10 active:scale-95 active:bg-white/10">
                         🔍 Cari berdasarkan bahan
                     </a>

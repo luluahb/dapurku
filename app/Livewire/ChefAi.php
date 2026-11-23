@@ -7,17 +7,23 @@ use App\Services\ChefAi as OtakChefAi;
 use App\Services\GeminiGagal;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
-use Livewire\Attributes\Title;
 use Livewire\Component;
 
-// Halaman Chef AI: tanya-jawab resep dengan AI.
+// Widget Chef AI: tombol chat di pojok kanan bawah, ada di setiap halaman (dipasang di layout).
 //
 // Alurnya dibuat DUA langkah supaya terasa cepat:
 //   1. tanya()  → pertanyaan langsung tampil di layar + muncul animasi "Chef AI sedang mengetik"
 //   2. jawab()  → dipanggil otomatis sesudahnya, di sinilah Gemini dihubungi (butuh beberapa detik)
-#[Title('Chef AI')]
+//
+// Obrolan disimpan di SESSION, jadi tidak hilang saat pengunjung pindah halaman
+// (misalnya setelah mengklik resep yang disarankan Chef AI).
 class ChefAi extends Component
 {
+    private const KUNCI_SESSION = 'chef-ai.percakapan';
+
+    // Maksimal pesan yang disimpan di session (supaya session tidak membengkak)
+    private const MAKS_PESAN = 20;
+
     // Isi kotak ketik
     public string $pertanyaan = '';
 
@@ -34,6 +40,12 @@ class ChefAi extends Component
         'Camilan manis buat sore hari',
         'Makanan berkuah hangat buat musim hujan',
     ];
+
+    // mount() = dijalankan sekali saat komponen pertama kali dibuat (setiap halaman dibuka)
+    public function mount(): void
+    {
+        $this->percakapan = session(self::KUNCI_SESSION, []);
+    }
 
     public function tanya(): void
     {
@@ -99,20 +111,28 @@ class ChefAi extends Component
         }
 
         $this->percakapan[] = ['peran' => 'chef', 'teks' => $hasil['jawaban'], 'resep_id' => $hasil['resep_id']];
+        $this->percakapan = array_slice($this->percakapan, -self::MAKS_PESAN);
         $this->menunggu = false;
+
+        // Simpan setelah pertanyaan DAN jawabannya lengkap
+        session([self::KUNCI_SESSION => $this->percakapan]);
     }
 
     public function mulaiUlang(): void
     {
         $this->reset('percakapan', 'pertanyaan', 'menunggu');
         $this->resetErrorBag();
+        session()->forget(self::KUNCI_SESSION);
     }
 
     public function render()
     {
-        // Ambil data semua resep yang disebut di obrolan, sekali query saja
+        // Ambil data semua resep yang disebut di obrolan, sekali query saja.
+        // Widget ini ada di setiap halaman, jadi kalau obrolan masih kosong, database tidak disentuh.
         $semuaId = collect($this->percakapan)->pluck('resep_id')->flatten()->unique();
-        $resep = Resep::with('kategori')->whereIn('id', $semuaId)->get()->keyBy('id');
+        $resep = $semuaId->isEmpty()
+            ? collect()
+            : Resep::with('kategori')->whereIn('id', $semuaId)->get()->keyBy('id');
 
         return view('livewire.chef-ai', ['resep' => $resep, 'contoh' => self::CONTOH]);
     }

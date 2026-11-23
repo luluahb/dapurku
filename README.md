@@ -31,6 +31,7 @@ Proyek ini saya buat sebagai proyek portofolio untuk belajar membangun aplikasi 
 
 ### 🧑‍🍳 Chef AI: asisten masak berbasis AI
 Ceritakan bahan yang kamu punya ("ada telur dan santan, masak apa?"), dan Chef AI merekomendasikan resep **yang benar-benar ada di Dapurku**, lengkap dengan kartu resepnya.
+- **Widget chat di setiap halaman**: tombol 🧑‍🍳 di pojok kanan bawah membuka panel chat (jendela kecil di laptop, layar penuh di HP). Obrolan disimpan di session, jadi tidak hilang saat pindah ke halaman resep.
 - **RAG (Retrieval-Augmented Generation)**: setiap resep diubah menjadi *embedding* (Gemini Embedding), lalu dicari yang maknanya paling mirip dengan pertanyaan (*cosine similarity*). Resep-resep itu diberikan ke Gemini sebagai bahan bacaan, sehingga jawabannya tidak mengarang.
 - **Pencarian berdasarkan makna**: "makanan berkuah hangat buat musim hujan" menemukan sup, laksa, dan bubur walaupun kata-katanya tidak ada di judul.
 - **Ingat obrolan**: pertanyaan lanjutan seperti "kalau yang tidak pakai santan?" tetap dipahami.
@@ -181,7 +182,7 @@ app/
 │   ├── Jelajah.php                  # Pencarian, filter, infinite scroll
 │   ├── KomentarResep.php            # Ulasan & rating
 │   ├── Favoritku.php                # Resep yang disimpan
-│   └── ChefAi.php                   # Halaman chat Chef AI
+│   └── ChefAi.php                   # Widget chat Chef AI (pojok kanan bawah)
 ├── Services/
 │   ├── ChefAi.php                   # Otak RAG: embedding, pencarian makna, prompt
 │   └── Gemini.php                   # Komunikasi dengan Gemini API (retry + model cadangan)

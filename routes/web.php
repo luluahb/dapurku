@@ -3,7 +3,6 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\HalamanController;
 use App\Http\Controllers\ResepController;
-use App\Livewire\ChefAi;
 use App\Livewire\Favoritku;
 use App\Livewire\Jelajah;
 use Illuminate\Support\Facades\Route;
@@ -26,8 +25,9 @@ Route::livewire('/favoritku', Favoritku::class)->name('favoritku');
 // Halaman Jelajah: langsung memakai komponen Livewire sebagai satu halaman penuh (tanpa controller)
 Route::livewire('/jelajah', Jelajah::class)->name('jelajah');
 
-// Chef AI: tanya-jawab resep dengan AI (Gemini + RAG). Logikanya di app/Services/ChefAi.php
-Route::livewire('/chef-ai', ChefAi::class)->name('chef-ai');
+// Chef AI tampil sebagai tombol chat di setiap halaman (lihat layouts/app.blade.php).
+// Link /chef-ai tetap ada untuk dibagikan: membuka beranda dengan panel Chef AI langsung terbuka.
+Route::redirect('/chef-ai', '/?chef-ai')->name('chef-ai');
 
 // ================= ADMIN =================
 

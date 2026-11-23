@@ -21,7 +21,6 @@
     $menu = [
         ['label' => 'Beranda', 'ikon' => '🏠', 'url' => route('beranda'), 'aktif' => request()->routeIs('beranda')],
         ['label' => 'Jelajah Resep', 'ikon' => '🔍', 'url' => route('jelajah'), 'aktif' => request()->routeIs('jelajah')],
-        ['label' => 'Chef AI', 'ikon' => '🧑‍🍳', 'url' => route('chef-ai'), 'aktif' => request()->routeIs('chef-ai')],
         ['label' => 'Kategori', 'ikon' => '🗂️', 'url' => route('beranda') . '#kategori', 'aktif' => false],
     ];
 @endphp
@@ -224,11 +223,19 @@
                 <p class="mt-3 text-sm text-stone-500 dark:text-stone-400">Dibuat dengan Laravel, Livewire, dan Tailwind CSS sebagai proyek portofolio.</p>
             </div>
         </div>
-        <p class="px-4 pb-24 text-center text-sm text-stone-400 sm:pb-8">© {{ date('Y') }} Dapurku. Dibuat dengan ❤️ dan sedikit garam.</p>
+        {{-- pb-40 (HP): ruang kosong supaya teks ini tidak tertutup tombol Chef AI & tombol ↑ --}}
+        <p class="px-4 pb-40 text-center text-sm text-stone-400 sm:pb-8">© {{ date('Y') }} Dapurku. Dibuat dengan ❤️ dan sedikit garam.</p>
     </footer>
 
+    {{-- ===== CHEF AI (tombol chat di pojok kanan bawah) =====
+         Tidak dipasang di halaman admin --}}
+    @unless (request()->is('admin*'))
+        <livewire:chef-ai />
+    @endunless
+
     {{-- ===== TOMBOL KEMBALI KE ATAS =====
-         Muncul setelah halaman digulir cukup jauh --}}
+         Muncul setelah halaman digulir cukup jauh.
+         Posisinya di atas tombol Chef AI (bottom-24); di halaman admin turun ke bawah (bottom-6). --}}
     <button type="button" aria-label="Kembali ke atas"
         x-data="{ tampil: false }"
         @scroll.window.throttle.100ms="tampil = window.scrollY > 900"
@@ -238,7 +245,11 @@
         x-transition:leave="transition duration-200 ease-in"
         x-transition:leave-end="translate-y-4 opacity-0"
         @click="window.scrollTo({ top: 0, behavior: 'smooth' })"
-        class="fixed bottom-6 right-6 z-40 grid size-12 place-items-center rounded-full bg-primer-500 text-white shadow-xl shadow-primer-500/30 transition hover:-translate-y-1 hover:bg-primer-600 active:scale-90 print:hidden">
+        @class([
+            'fixed z-40 grid size-12 place-items-center rounded-full bg-primer-500 text-white shadow-xl shadow-primer-500/30 transition hover:-translate-y-1 hover:bg-primer-600 active:scale-90 print:hidden',
+            'bottom-24 right-7' => ! request()->is('admin*'),
+            'bottom-6 right-6' => request()->is('admin*'),
+        ])>
         <svg class="size-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19V5M5 12l7-7 7 7" /></svg>
     </button>
 
