@@ -11,6 +11,7 @@
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?logo=alpinedotjs&logoColor=black)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
 ![Tests](https://img.shields.io/badge/tests-35_lulus-22a05a)
 
 <img src="docs/screenshots/beranda.png" alt="Halaman beranda Dapurku" width="100%">
@@ -66,6 +67,7 @@ Proyek ini saya buat sebagai proyek portofolio untuk belajar membangun aplikasi 
 | Tampilan | Tailwind CSS 4 dengan sistem desain sendiri (warna, font, animasi) |
 | Database | MySQL |
 | Testing | PHPUnit (35 test) |
+| Container | Docker + Docker Compose (PHP 8.3 Apache, MySQL 8.4) |
 | Hosting | Wasmer Edge |
 
 ## Hal teknis yang menarik
@@ -81,6 +83,28 @@ Proyek ini saya buat sebagai proyek portofolio untuk belajar membangun aplikasi 
 - **Halaman error** (404, 403, 419, 429, 500) dengan desain yang konsisten.
 
 ## Menjalankan di komputer sendiri
+
+### Cara cepat: dengan Docker 🐳
+
+Hanya butuh [Docker Desktop](https://www.docker.com/products/docker-desktop/). PHP, MySQL, dan Composer tidak perlu dipasang.
+
+```bash
+git clone https://github.com/luluahb/dapurku.git
+cd dapurku
+docker compose up -d --build
+```
+
+Buka `http://localhost:8080`. Saat container menyala, tabel dibuat dan data contoh diisi otomatis (lihat [`docker/start.sh`](docker/start.sh)). Login admin di `/admin/login` dengan `admin@dapurku.test` / `password123`, atau isi `ADMIN_EMAIL`, `ADMIN_PASSWORD`, dan `APP_KEY` di file `.env` untuk menggantinya.
+
+| Perintah | Fungsi |
+|---|---|
+| `docker compose logs -f app` | Melihat log aplikasi |
+| `docker compose down` | Mematikan container (data tetap tersimpan di volume) |
+| `docker compose down -v` | Mematikan dan menghapus data database serta foto |
+
+Isinya: dua container, yaitu `app` (PHP 8.3 + Apache, dibuat lewat [`Dockerfile`](Dockerfile) multi-stage) dan `db` (MySQL 8.4), diatur di [`compose.yaml`](compose.yaml).
+
+### Cara manual: tanpa Docker
 
 **Yang dibutuhkan:** PHP 8.3+, Composer, Node.js, dan MySQL (misalnya lewat [Laragon](https://laragon.org)).
 

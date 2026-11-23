@@ -1,0 +1,73 @@
+# =====================================================================
+#  Docker Compose: menjalankan BEBERAPA container sekaligus.
+#  Dapurku butuh 2 container yang saling terhubung:
+#     app → PHP + Apache + kode Dapurku   (dibuat dari Dockerfile)
+#     db  → MySQL                          (image resmi, tinggal pakai)
+#
+#  Perintah:
+#     docker compose up -d --build   → build image & nyalakan semua
+#     docker compose logs -f app     → lihat log aplikasi
+#     docker compose down            → matikan (data tetap aman)
+#     docker compose down -v         → matikan + HAPUS data database & foto
+#
+#  Nilai ${...} diambil dari file .env di folder ini (kalau ada).
+# =====================================================================
+
+services:
+  app:
+    build: .                 # buat image dari Dockerfile di folder ini
+    image: dapurku           # nama image hasil build
+    ports:
+      - "8080:80"            # localhost:8080 di laptop → port 80 di dalam container
+    environment:
+      APP_NAME: Dapurku
+      APP_ENV: local         # bukan "production", supaya link tidak dipaksa https
+      APP_DEBUG: "false"
+      APP_KEY: ${APP_KEY:-}
+      APP_URL: http://localhost:8080
+      APP_LOCALE: id
+      APP_FAKER_LOCALE: id_ID
+      APP_TIMEZONE: Asia/Jakarta
+      LOG_CHANNEL: stderr    # log tampil di "docker compose logs"
+
+      # "db" = nama service di bawah. Di dalam jaringan Docker, nama service
+      # otomatis menjadi alamat (hostname), jadi tidak pakai 127.0.0.1.
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: dapurku
+      DB_USERNAME: dapurku
+      DB_PASSWORD: dapurku-docker
+
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@dapurku.test}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-password123}
+    volumes:
+      # Foto upload disimpan di volume, supaya tidak hilang saat container dibuat ulang
+      - foto-resep:/var/www/html/storage/app/public
+    depends_on:
+      db:
+        condition: service_healthy   # tunggu MySQL benar-benar siap dulu
+
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: dapurku
+      MYSQL_USER: dapurku
+      MYSQL_PASSWORD: dapurku-docker
+      MYSQL_ROOT_PASSWORD: root-docker
+    volumes:
+      # Isi database disimpan di volume, bukan di dalam container
+      - data-mysql:/var/lib/mysql
+    healthcheck:
+      # "Sehat" = MySQL sudah menjawab lewat jaringan
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-proot-docker"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    # Sengaja TIDAK membuka port ke laptop, supaya tidak bentrok
+    # dengan MySQL Laragon (port 3306). Hanya container "app" yang perlu akses.
+
+# Volume = "hardisk" milik Docker yang tetap ada walau container dihapus
+volumes:
+  data-mysql:
+  foto-resep:

@@ -1,0 +1,30 @@
+# File/folder yang TIDAK ikut disalin ke image (mirip .gitignore).
+# Tujuannya: image lebih kecil, build lebih cepat, dan rahasia tidak bocor.
+
+# Rahasia: .env berisi password → jangan pernah masuk image
+.env
+.env.*
+!.env.example
+
+# Dibuat ulang di dalam Docker
+vendor
+node_modules
+bootstrap/cache/*.php
+public/storage
+public/hot
+
+# Isi storage dari laptop (log, sesi, cache) tidak perlu dibawa
+storage/logs/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/app/public/*
+
+# Tidak dibutuhkan untuk menjalankan aplikasi
+.git
+tests
+docs
+.phpunit.cache
+.claude
+.vscode
+.idea
