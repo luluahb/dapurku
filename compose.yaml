@@ -41,6 +41,9 @@ services:
 
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@dapurku.test}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-password123}
+
+      # Chef AI: diambil dari .env. Kalau kosong, halaman Chef AI tetap ada tapi belum aktif.
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
     volumes:
       # Foto upload disimpan di volume, supaya tidak hilang saat container dibuat ulang
       - foto-resep:/var/www/html/storage/app/public

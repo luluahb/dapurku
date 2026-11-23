@@ -12,7 +12,8 @@
 ![Alpine.js](https://img.shields.io/badge/Alpine.js-8BC0D0?logo=alpinedotjs&logoColor=black)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-35_lulus-22a05a)
+![Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?logo=googlegemini&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-44_lulus-22a05a)
 
 <img src="docs/screenshots/beranda.png" alt="Halaman beranda Dapurku" width="100%">
 
@@ -27,6 +28,15 @@ Proyek ini saya buat sebagai proyek portofolio untuk belajar membangun aplikasi 
 **🔗 Demo:** [dapurku.wasmer.app](https://dapurku.wasmer.app)
 
 ## Fitur
+
+### 🧑‍🍳 Chef AI: asisten masak berbasis AI
+Ceritakan bahan yang kamu punya ("ada telur dan santan, masak apa?"), dan Chef AI merekomendasikan resep **yang benar-benar ada di Dapurku**, lengkap dengan kartu resepnya.
+- **RAG (Retrieval-Augmented Generation)**: setiap resep diubah menjadi *embedding* (Gemini Embedding), lalu dicari yang maknanya paling mirip dengan pertanyaan (*cosine similarity*). Resep-resep itu diberikan ke Gemini sebagai bahan bacaan, sehingga jawabannya tidak mengarang.
+- **Pencarian berdasarkan makna**: "makanan berkuah hangat buat musim hujan" menemukan sup, laksa, dan bubur walaupun kata-katanya tidak ada di judul.
+- **Ingat obrolan**: pertanyaan lanjutan seperti "kalau yang tidak pakai santan?" tetap dipahami.
+- **Jawaban terstruktur (JSON schema)**, dan id resep dari AI divalidasi ulang ke database untuk membuang halusinasi.
+- **Tahan banting**: coba ulang otomatis dan **model cadangan** saat server Gemini sibuk (HTTP 503), pesan ramah saat gagal, serta *guardrail* terhadap pertanyaan di luar topik dan *prompt injection*.
+- **Hemat kuota gratis**: vector resep disimpan di cache dan otomatis diperbarui saat resep diubah, serta dibatasi 8 pertanyaan per menit dan 40 per hari untuk setiap pengunjung.
 
 ### Untuk pengunjung
 - 🔍 **Pencarian langsung**: hasil berubah saat mengetik, tanpa reload. Mencari di judul, deskripsi, **dan daftar bahan**.
@@ -49,6 +59,8 @@ Proyek ini saya buat sebagai proyek portofolio untuk belajar membangun aplikasi 
 
 ## Tampilan
 
+<p align="center"><img src="docs/screenshots/chef-ai.png" alt="Chef AI merekomendasikan resep dari bahan yang dimiliki pengguna" width="100%"></p>
+
 | Detail resep | Jelajah resep |
 |:---:|:---:|
 | <img src="docs/screenshots/detail-resep.png" alt="Halaman detail resep"> | <img src="docs/screenshots/jelajah.png" alt="Halaman jelajah resep dengan pencarian"> |
@@ -66,7 +78,8 @@ Proyek ini saya buat sebagai proyek portofolio untuk belajar membangun aplikasi 
 | Interaksi kecil di browser | Alpine.js (menu, mode gelap, checklist, tombol suka dan simpan) |
 | Tampilan | Tailwind CSS 4 dengan sistem desain sendiri (warna, font, animasi) |
 | Database | MySQL |
-| Testing | PHPUnit (35 test) |
+| AI | Google Gemini API (`gemini-3.1-flash-lite` + `gemini-embedding-001`), RAG dengan cosine similarity |
+| Testing | PHPUnit (44 test, Gemini dipalsukan dengan `Http::fake`) |
 | Container | Docker + Docker Compose (PHP 8.3 Apache, MySQL 8.4) |
 | Hosting | Wasmer Edge |
 
@@ -94,7 +107,7 @@ cd dapurku
 docker compose up -d --build
 ```
 
-Buka `http://localhost:8080`. Saat container menyala, tabel dibuat dan data contoh diisi otomatis (lihat [`docker/start.sh`](docker/start.sh)). Login admin di `/admin/login` dengan `admin@dapurku.test` / `password123`, atau isi `ADMIN_EMAIL`, `ADMIN_PASSWORD`, dan `APP_KEY` di file `.env` untuk menggantinya.
+Buka `http://localhost:8080`. Saat container menyala, tabel dibuat dan data contoh diisi otomatis (lihat [`docker/start.sh`](docker/start.sh)). Login admin di `/admin/login` dengan `admin@dapurku.test` / `password123`, atau isi `ADMIN_EMAIL`, `ADMIN_PASSWORD`, dan `APP_KEY` di file `.env` untuk menggantinya. Untuk mengaktifkan Chef AI, isi juga `GEMINI_API_KEY` (gratis di [Google AI Studio](https://aistudio.google.com/apikey)).
 
 | Perintah | Fungsi |
 |---|---|
@@ -129,6 +142,9 @@ DB_CONNECTION=mysql
 DB_DATABASE=dapurku
 DB_USERNAME=root
 DB_PASSWORD=
+
+# Opsional, untuk Chef AI (key gratis di https://aistudio.google.com/apikey)
+GEMINI_API_KEY=
 ```
 
 ```bash
@@ -164,13 +180,17 @@ app/
 ├── Livewire/
 │   ├── Jelajah.php                  # Pencarian, filter, infinite scroll
 │   ├── KomentarResep.php            # Ulasan & rating
-│   └── Favoritku.php                # Resep yang disimpan
+│   ├── Favoritku.php                # Resep yang disimpan
+│   └── ChefAi.php                   # Halaman chat Chef AI
+├── Services/
+│   ├── ChefAi.php                   # Otak RAG: embedding, pencarian makna, prompt
+│   └── Gemini.php                   # Komunikasi dengan Gemini API (retry + model cadangan)
 └── Models/                          # Resep, Kategori, Bahan, Langkah, Komentar, User
 resources/
 ├── css/app.css                      # Sistem desain (warna, font, animasi)
 ├── js/app.js                        # Komponen Alpine: tombol suka & simpan
 └── views/                           # Blade: layout, komponen, halaman
-tests/Feature/                       # 35 test otomatis
+tests/Feature/                       # 44 test otomatis
 ```
 
 ## Kredit

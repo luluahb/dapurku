@@ -21,6 +21,7 @@
     $menu = [
         ['label' => 'Beranda', 'ikon' => '🏠', 'url' => route('beranda'), 'aktif' => request()->routeIs('beranda')],
         ['label' => 'Jelajah Resep', 'ikon' => '🔍', 'url' => route('jelajah'), 'aktif' => request()->routeIs('jelajah')],
+        ['label' => 'Chef AI', 'ikon' => '🧑‍🍳', 'url' => route('chef-ai'), 'aktif' => request()->routeIs('chef-ai')],
         ['label' => 'Kategori', 'ikon' => '🗂️', 'url' => route('beranda') . '#kategori', 'aktif' => false],
     ];
 @endphp
