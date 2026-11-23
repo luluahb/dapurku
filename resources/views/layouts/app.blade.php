@@ -115,8 +115,17 @@
                             document.documentElement.classList.toggle('dark', gelap);
                             try { localStorage.setItem('tema', gelap ? 'gelap' : 'terang') } catch (e) {}"
                     class="grid size-10 place-items-center rounded-full transition hover:bg-primer-100 active:scale-90 dark:hover:bg-stone-800">
-                    <span x-show="!gelap" x-transition.scale.origin.center class="text-xl">🌙</span>
-                    <span x-show="gelap" x-cloak x-transition.scale.origin.center class="text-xl">☀️</span>
+                    {{-- Kedua ikon ditumpuk di sel grid yang SAMA ([grid-area:1/1]).
+                         Tanpa ini, selama animasi keduanya tampil bersamaan dan ikon kedua
+                         turun ke baris bawah (terlihat "jatuh" keluar dari tombol). --}}
+                    <span x-show="!gelap"
+                        x-transition:enter="transition duration-300 ease-out" x-transition:enter-start="-rotate-90 scale-0 opacity-0"
+                        x-transition:leave="transition duration-200 ease-in" x-transition:leave-end="rotate-90 scale-0 opacity-0"
+                        class="text-xl [grid-area:1/1]">🌙</span>
+                    <span x-show="gelap" x-cloak
+                        x-transition:enter="transition duration-300 ease-out" x-transition:enter-start="-rotate-90 scale-0 opacity-0"
+                        x-transition:leave="transition duration-200 ease-in" x-transition:leave-end="rotate-90 scale-0 opacity-0"
+                        class="text-xl [grid-area:1/1]">☀️</span>
                 </button>
 
                 {{-- Tombol admin: HANYA terlihat kalau admin sedang login.

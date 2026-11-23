@@ -2,31 +2,70 @@
     Widget Chef AI: tombol 🧑‍🍳 di pojok kanan bawah + panel chat.
     Data & logika di App\Livewire\ChefAi. Dipasang di layouts/app.blade.php.
 
-    Alpine (x-data) hanya mengurus buka/tutup panel:
+    Alpine (x-data) mengurus buka/tutup panel dan gelembung sapaan:
     - $persist(...).using(sessionStorage): panel tetap terbuka saat pindah halaman
     - @buka-chef-ai.window: bisa dibuka dari tombol lain, misalnya di beranda
     - ?chef-ai di alamat web (dari link /chef-ai): panel langsung terbuka
+    - sapa: gelembung "Bingung mau masak apa?" muncul SEKALI per browser (diingat di localStorage)
 --}}
-<div x-data="{ terbuka: $persist(false).using(sessionStorage).as('chef-ai-terbuka') }"
-    x-init="if (new URLSearchParams(location.search).has('chef-ai')) terbuka = true"
+<div x-data="{
+        terbuka: $persist(false).using(sessionStorage).as('chef-ai-terbuka'),
+        sapa: false,
+        tampilkanSapa() {
+            this.sapa = true;
+            // Langsung dicatat begitu tampil, jadi tidak muncul lagi walau halaman di-reload.
+            // try/catch: localStorage bisa diblokir browser (misal mode privat)
+            try { localStorage.setItem('chef-ai-disapa', '1') } catch (e) {}
+        },
+    }"
+    x-init="
+        if (new URLSearchParams(location.search).has('chef-ai')) terbuka = true;
+
+        let sudahDisapa = true;
+        try { sudahDisapa = !! localStorage.getItem('chef-ai-disapa') } catch (e) {}
+
+        // Sapa 2,5 detik setelah halaman terbuka, lalu hilang sendiri setelah 10 detik
+        if (! sudahDisapa && ! terbuka) {
+            setTimeout(() => {
+                if (terbuka) return;
+                tampilkanSapa();
+                setTimeout(() => sapa = false, 10000);
+            }, 2500);
+        }
+
+        // Begitu chat dibuka, gelembung sapaan tidak perlu lagi
+        $watch('terbuka', (buka) => buka && (sapa = false));
+    "
     x-effect="document.body.classList.toggle('max-sm:overflow-hidden', terbuka)"
     @buka-chef-ai.window="terbuka = true; $nextTick(() => $refs.ketik?.focus())"
     @keydown.escape.window="terbuka = false"
     class="print:hidden">
 
-    {{-- ===================== TOMBOL BULAT ===================== --}}
+    {{-- ===================== GELEMBUNG SAPAAN ===================== --}}
+    <div x-show="sapa && ! terbuka" x-cloak
+        x-transition:enter="transition duration-300 ease-out"
+        x-transition:enter-start="translate-y-3 opacity-0"
+        x-transition:leave="transition duration-200 ease-in"
+        x-transition:leave-end="translate-y-3 opacity-0"
+        class="fixed bottom-24 right-6 z-[70] flex max-w-[17rem] items-start gap-2 rounded-3xl rounded-br-lg bg-white py-3 pl-4 pr-2 shadow-xl shadow-stone-900/10 ring-1 ring-stone-200 dark:bg-stone-900 dark:ring-stone-700">
+        <button type="button" @click="terbuka = true" class="text-left text-sm">
+            <span class="font-bold">👋 Bingung mau masak apa?</span><br>
+            <span class="text-stone-500 dark:text-stone-400">Ceritakan bahan yang kamu punya, nanti Chef AI carikan resepnya.</span>
+        </button>
+        <button type="button" @click="sapa = false" aria-label="Tutup sapaan"
+            class="grid size-7 shrink-0 place-items-center rounded-full text-stone-400 transition hover:bg-stone-100 active:scale-90 dark:hover:bg-stone-800">✕</button>
+    </div>
+
+    {{-- ===================== TOMBOL CHEF AI =====================
+         Tertutup: tombol "🧑‍🍳 Chef AI" (tulisannya selalu terlihat, termasuk di HP)
+         Terbuka : tombol bulat ✕ (di HP disembunyikan, karena panel punya tombol ✕ sendiri) --}}
     <button type="button" @click="terbuka = !terbuka"
         :aria-label="terbuka ? 'Tutup Chef AI' : 'Buka Chef AI'" :aria-expanded="terbuka"
-        :class="terbuka && 'max-sm:hidden'"
-        class="group fixed bottom-6 right-6 z-[70] grid size-14 place-items-center rounded-full bg-primer-500 text-white shadow-xl shadow-primer-500/40 transition hover:-translate-y-1 hover:bg-primer-600 active:scale-90">
+        :class="terbuka ? 'w-14 justify-center max-sm:hidden' : 'gap-2 pl-4 pr-5'"
+        class="group fixed bottom-6 right-6 z-[70] flex h-14 items-center rounded-full bg-primer-500 font-bold text-white shadow-xl shadow-primer-500/40 transition hover:-translate-y-1 hover:bg-primer-600 active:scale-90">
         <span x-show="!terbuka" class="text-2xl transition group-hover:rotate-12">🧑‍🍳</span>
+        <span x-show="!terbuka">Chef AI</span>
         <svg x-show="terbuka" x-cloak class="size-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" /></svg>
-
-        {{-- Label kecil "Tanya Chef AI" yang muncul saat panel tertutup (hanya laptop) --}}
-        <span x-show="!terbuka"
-            class="pointer-events-none absolute right-full mr-3 hidden whitespace-nowrap rounded-full bg-stone-900 px-3 py-1.5 text-sm font-semibold text-white opacity-0 shadow-lg transition group-hover:opacity-100 sm:block dark:bg-white dark:text-stone-900">
-            Tanya Chef AI
-        </span>
     </button>
 
     {{-- ===================== PANEL CHAT =====================
